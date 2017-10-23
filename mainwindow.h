@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <opencv2/opencv.hpp>
+using namespace cv;
 
 namespace Ui {
 class MainWindow;
@@ -11,12 +15,23 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+signals:
+  void Exit();
+
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+  explicit MainWindow(QWidget *parent = 0);
+  ~MainWindow();
+
+public slots:
+  void GetDepthFrame(Mat);
 
 private:
-    Ui::MainWindow *ui;
+  // items for depth display
+  QGraphicsPixmapItem* itemDepth;
+  QGraphicsScene* sceneDepth;
+
+  Ui::MainWindow *ui;
+
 };
 
 #endif // MAINWINDOW_H

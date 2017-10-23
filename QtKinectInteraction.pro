@@ -16,6 +16,7 @@ TEMPLATE = app
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
 DEFINES += QT_DEPRECATED_WARNINGS
+DEFINES += _USE_OPENCV
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -27,12 +28,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     EasyKinect.cpp \
-    viewmodel.cpp
+    viewmodel.cpp \
+    kinectopencvtools.cpp
 
 HEADERS += \
         mainwindow.h \
     EasyKinect.h \
-    viewmodel.h
+    viewmodel.h \
+    KinectOpenCvTools.h
 
 FORMS += \
         mainwindow.ui

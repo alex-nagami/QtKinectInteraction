@@ -84,7 +84,7 @@ class KinectSensor
 {
 	friend class KinectFusion;
 
-private:
+public:
 	// Current Kinect sensor
 	IKinectSensor* sensor;
 	// Sensor coordinate mapper
@@ -241,6 +241,10 @@ public:
 	/// <param name="depth">Pointer to a pointer to store the body frame </param>
 	HRESULT getBodyFrame(IBodyFrame** body, INT64* time = nullptr)
 	{
+    if(!body)
+    {
+      return -1;
+    }
 		HRESULT result;
 		IBodyFrameReference* ref = NULL;
 		result = frame->get_BodyFrameReference(&ref);
@@ -261,34 +265,39 @@ public:
 	}
 
 	HRESULT getKBodyFrame(KinectBody bodies[])
-	{
+  {
 		HRESULT result;
-		IBodyFrame* frame = NULL;
+    IBodyFrame* frame = NULL;
 		result = getBodyFrame(&frame);
 		if (FAILED(result))
 		{
+      SafeRelease(frame);
 			return result;
 		}
-		INT64 time = 0;
+    INT64 time = 0;
 		result = frame->get_RelativeTime(&time);
 		if (FAILED(result))
 		{
+      SafeRelease(frame);
 			return result;
 		}
-		IBody* body[BODY_COUNT] = { 0 };
-		result = frame->GetAndRefreshBodyData(BODY_COUNT, body);
+    IBody* body[BODY_COUNT] = { 0 };
+    result = frame->GetAndRefreshBodyData(BODY_COUNT, body);
 		for (int i = 0; i < BODY_COUNT; i++)
 		{
+      bodies[i].tracked = FALSE;
 			result = body[i]->get_IsTracked(&bodies[i].tracked);
 			if (SUCCEEDED(result) && bodies[i].tracked)
 			{
+//        cout << "body " << i << "is tracked" << endl;
 				bodies[i].time = time;
 				body[i]->get_HandLeftState(&bodies[i].left);
 				body[i]->get_HandRightState(&bodies[i].right);
 				result = body[i]->GetJoints(_countof(bodies[i].joints), bodies[i].joints);
 			}
 		}
-		return result;
+    SafeRelease(frame);
+    return result;
 	}
 
 	/// <summary>
