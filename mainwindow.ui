@@ -1,24 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow" >
-  <property name="geometry" >
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>702</width>
+    <height>269</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QMenuBar" name="menuBar" />
-  <widget class="QToolBar" name="mainToolBar" />
-  <widget class="QWidget" name="centralWidget" />
-  <widget class="QStatusBar" name="statusBar" />
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QGroupBox" name="groupDepth">
+      <property name="minimumSize">
+       <size>
+        <width>281</width>
+        <height>251</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Depth</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QGraphicsView" name="gvDepth">
+         <property name="minimumSize">
+          <size>
+           <width>256</width>
+           <height>212</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupGesture">
+      <property name="minimumSize">
+       <size>
+        <width>281</width>
+        <height>251</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Gesture</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QGraphicsView" name="gvGesture">
+         <property name="minimumSize">
+          <size>
+           <width>256</width>
+           <height>212</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupControl">
+      <property name="minimumSize">
+       <size>
+        <width>110</width>
+        <height>251</height>
+       </size>
+      </property>
+      <property name="title">
+       <string>Control Commands</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QPushButton" name="buttonOpenGesture">
+         <property name="text">
+          <string>Open Gesture</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="buttonCloseGesture">
+         <property name="text">
+          <string>Close Gesture</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="buttonDrawGesture">
+         <property name="text">
+          <string>Draw Gesture</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="buttonSaveGesture">
+         <property name="text">
+          <string>Save Gesture</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="buttonLoadConfig">
+         <property name="text">
+          <string>Load Config</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="buttonChangeInput">
+         <property name="text">
+          <string>Change Input</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
  </widget>
- <layoutDefault spacing="6" margin="11" />
- <pixmapfunction></pixmapfunction>
+ <layoutdefault spacing="6" margin="11"/>
  <resources/>
  <connections/>
 </ui>

@@ -26,11 +26,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    EasyKinect.cpp
+    EasyKinect.cpp \
+    viewmodel.cpp
 
 HEADERS += \
         mainwindow.h \
-    EasyKinect.h
+    EasyKinect.h \
+    viewmodel.h
 
 FORMS += \
         mainwindow.ui
