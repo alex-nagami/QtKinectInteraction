@@ -24,11 +24,16 @@ public:
 
 public slots:
   void GetDepthFrame(Mat);
+  void GetGestureFrame(Mat);
 
 private:
   // items for depth display
   QGraphicsPixmapItem* itemDepth;
   QGraphicsScene* sceneDepth;
+
+  // items for gesture display
+  QGraphicsPixmapItem* itemGesture;
+  QGraphicsScene* sceneGesture;
 
   Ui::MainWindow *ui;
 

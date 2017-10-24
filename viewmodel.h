@@ -10,6 +10,7 @@
 #define _USE_OPENCV
 #include "EasyKinect.h"
 using namespace cv;
+#include "jointfilter.h"
 
 class ViewModel : public QThread
 {

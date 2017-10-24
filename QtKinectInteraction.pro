@@ -29,13 +29,15 @@ SOURCES += \
         mainwindow.cpp \
     EasyKinect.cpp \
     viewmodel.cpp \
-    kinectopencvtools.cpp
+    kinectopencvtools.cpp \
+    jointfilter.cpp
 
 HEADERS += \
         mainwindow.h \
     EasyKinect.h \
     viewmodel.h \
-    KinectOpenCvTools.h
+    KinectOpenCvTools.h \
+    jointfilter.h
 
 FORMS += \
         mainwindow.ui

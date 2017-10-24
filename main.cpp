@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
   MainWindow w;
 
   QObject::connect(&viewModel, &ViewModel::SendDepthFrame, &w, &MainWindow::GetDepthFrame, Qt::QueuedConnection);
+  QObject::connect(&viewModel, &ViewModel::SendGestureFrame, &w, &MainWindow::GetGestureFrame, Qt::QueuedConnection);
 
   w.show();
   viewModel.start();
