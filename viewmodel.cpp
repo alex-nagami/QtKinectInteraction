@@ -133,7 +133,7 @@ void ViewModel::TakeFrame()
 
           lastRightHandState = bodies[i].right;
 
-          if(drawing)
+          if(drawing && !drawingTemplate)
           {
             rightTraj.push_back(dps[JointType_HandRight]);
 //            qDebug() << "rightTraj.size()=" << rightTraj.size();
@@ -159,4 +159,23 @@ void ViewModel::TakeFrame()
 
     emit SendDepthFrame(infrared);
   }
+}
+
+bool ViewModel::GetOpenGestureFileName(QStirng fileName)
+{
+  QFile file(fileName);
+  if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
+    return false;
+  }
+  QTextStream in(&file);
+  Points temp;
+  while(!in.atEnd())
+  {
+    double x, y;
+    in >> x >> y;
+    temp.push_back(QVector2D(x, y));
+  }
+  drawingTemplate = true;
+  return true;
 }

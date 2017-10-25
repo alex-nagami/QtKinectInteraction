@@ -11,6 +11,7 @@
 #include "EasyKinect.h"
 using namespace cv;
 #include "jointfilter.h"
+#include "dollarone.h"
 
 class ViewModel : public QThread
 {
@@ -25,6 +26,7 @@ signals:
 
 public slots:
   bool GetStatus();
+  bool GetOpenGestureFileName(QStirng);
 
 private slots:
   void TakeFrame();
@@ -34,6 +36,8 @@ private:
 
   KinectSensor sensor;
   bool status;
+  bool drawingTemplate;
+  DollarOne dollarOne;
 };
 
 #endif // VIEWMODEL_H
