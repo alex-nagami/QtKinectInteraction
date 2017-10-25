@@ -37,6 +37,7 @@ private:
   KinectSensor sensor;
   bool status;
   bool drawingTemplate;
+  bool mouseInput = true;
   DollarOne dollarOne;
 };
 
