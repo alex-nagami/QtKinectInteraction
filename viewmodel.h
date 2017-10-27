@@ -2,6 +2,7 @@
 #define VIEWMODEL_H
 
 #include <QDebug>
+#include <QFile>
 #include <QObject>
 #include <QThread>
 #include <QTimer>
@@ -12,6 +13,7 @@
 using namespace cv;
 #include "jointfilter.h"
 #include "dollarone.h"
+#include "statemachine.h"
 
 class ViewModel : public QThread
 {
@@ -26,7 +28,7 @@ signals:
 
 public slots:
   bool GetStatus();
-  bool GetOpenGestureFileName(QStirng);
+  bool GetOpenGestureFileName(QString);
 
 private slots:
   void TakeFrame();
@@ -39,6 +41,7 @@ private:
   bool drawingTemplate;
   bool mouseInput = true;
   DollarOne dollarOne;
+  StateMachine stateMachine;
 };
 
 #endif // VIEWMODEL_H

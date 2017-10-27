@@ -3,6 +3,7 @@
 
 #include <QFile>
 #include <QMap>
+#include <QObject>
 #include <QString>
 #include <QTextStream>
 #include <QVector>
@@ -29,7 +30,7 @@ public:
 
   ActionType type;
 
-  bool mouseLeftRight;
+  bool mouseLeftRight; // true=left, false=right
   int mouseWheelAmount;
   int keyVK;
   QString programPath;
@@ -44,11 +45,17 @@ public:
   Action action;
 };
 
-class StateMachine
+class StateMachine : QObject
 {
+  Q_OBJECT
+signals:
+  void GetNewTransfer(QString fileName);
+
 public:
+  const QString originalState = "ORIGINAL";
+
   StateMachine();
-  void LoadConfig(QString fileName);
+  bool LoadConfig(QString fileName);
   void Transfer(QString transName);
   void Clear();
 

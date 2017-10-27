@@ -2,7 +2,7 @@
 
 Points DollarOne::Normalize(Points input)
 {
-  return ScaleTo(TranslateTo(input, Point2f(0, 0)), gestureSize);
+  return ScaleTo(TranslateTo(input, QVector2D(0, 0)), 250);
 }
 
 QVector2D DollarOne::BoundingBox(Points input)
@@ -35,7 +35,7 @@ QVector2D DollarOne::Center(Points input)
   return QVector2D((xmin+xmax)/2, (ymin+ymax)/2);
 }
 
-Points DollarOne::TranslateTo(Points input, QVector2D center)
+Points DollarOne::TranslateTo(Points input, const QVector2D center)
 {
   QVector2D c = Center(input);
   for(int i=0; i<input.size(); i++)
@@ -45,7 +45,7 @@ Points DollarOne::TranslateTo(Points input, QVector2D center)
   return input;
 }
 
-Points DollarOne::ScaleTo(Points input, double size)
+Points DollarOne::ScaleTo(Points input, const double size)
 {
   QVector2D c = Center(input);
   QVector2D s = BoundingBox(input);
@@ -58,7 +58,7 @@ Points DollarOne::ScaleTo(Points input, double size)
   return input;
 }
 
-Points DollarOne::Rotate(Points input, double rad)
+Points DollarOne::Rotate(Points input, const double rad)
 {
   for(int i=0; i<input.size(); i++)
   {
@@ -79,10 +79,10 @@ double DollarOne::PathLength(Points input)
   return sum;
 }
 
-Points DollarOne::Resample(Points input, int nums)
+Points DollarOne::Resample(Points input, const int nums)
 {
   if(input.size()==0) return input;
-  if(input.size()==1) return Points(input[0], nums);
+  if(input.size()==1) return Points(nums, input[0]);
   double averageEdgeLen = PathLength(input) / (nums-1);
   double nowLen = 0;
   Points result;
@@ -127,7 +127,7 @@ double DollarOne::DistanceAtBestAngle(Points a, Points b, double left, double ri
   double rm = goldLeft*left+goldRight*right;
 
   Points tl = Rotate(a, lm);
-  Points tr = Rotatr(a, rm);
+  Points tr = Rotate(a, rm);
 
   double dl = Distance(tl, b);
   double dr = Distance(tr, b);
