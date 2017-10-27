@@ -59,3 +59,45 @@ void MainWindow::GetGestureFrame(Mat gesture)
   ui->gvGesture->fitInView(ui->gvGesture->scene()->sceneRect(), Qt::KeepAspectRatio);
   ui->gvGesture->show();
 }
+
+void MainWindow::on_buttonOpenGesture_clicked()
+{
+  QString fileName = QFileDialog::getOpenFileName(this, "Open a gesture");
+  if(fileName!="")
+  {
+    emit SigOpenGesture(fileName);
+  }
+}
+
+void MainWindow::on_buttonCloseGesture_clicked()
+{
+  emit SigCloseGesture();
+}
+
+void MainWindow::on_buttonDrawGesture_clicked()
+{
+  emit SigDrawGesture();
+}
+
+void MainWindow::on_buttonSaveGesture_clicked()
+{
+  QString fileName = QFileDialog::getSaveFileName(this, "Save gesture");
+  if(fileName!="")
+  {
+    emit SigSaveGesture(fileName);
+  }
+}
+
+void MainWindow::on_buttonLoadConfig_clicked()
+{
+  QString fileName = QFileDialog::getOpenFileName(this, "Open a config file");
+  if(fileName!="")
+  {
+    emit SigLoadConfig(fileName);
+  }
+}
+
+void MainWindow::on_buttonChangeInput_clicked()
+{
+  emit SigChangeInput();
+}

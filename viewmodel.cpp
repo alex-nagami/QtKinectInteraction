@@ -19,6 +19,34 @@ bool ViewModel::GetStatus()
   return status;
 }
 
+bool ViewModel::GetOpenGestureFileName(QString fileName)
+{
+  QFile file(fileName);
+  if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
+    return false;
+  }
+  QTextStream in(&file);
+  Points temp;
+  while(!in.atEnd())
+  {
+    double x, y;
+    in >> x >> y;
+    temp.push_back(QVector2D(x, y));
+  }
+  drawingTemplate = true;
+  return true;
+}
+
+bool ViewModel::GetOpenGestureFileName(QString fileName)
+{
+  QFile file(fileName);
+  if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
+    return false;
+  }
+}
+
 void ViewModel::run()
 {
   static int runCount = 0;
@@ -36,29 +64,6 @@ void ViewModel::run()
 // Main data process here
 void ViewModel::TakeFrame()
 {
-  // left hand filters
-  static MedianFilter leftMedianX;
-  static MedianFilter leftMedianY;
-  static MedianFilter leftMedianZ;
-  static AverageFilter leftAverageX;
-  static AverageFilter leftAverageY;
-  static AverageFilter leftAverageZ;
-  static MedianFilter leftHandStateMedian;
-
-  // right hanf filters
-  static MedianFilter rightMedianX;
-  static MedianFilter rightMedianY;
-  static MedianFilter rightMedianZ;
-  static LSEFilter rightLSEX;
-  static LSEFilter rightLSEY;
-  static LSEFilter rightLSEZ;
-  static MedianFilter rightHandStateMedian(9);
-
-  // right hand state recorder
-  static QVector<Point2f> rightTraj;
-  static HandState lastRightHandState = HandState_Unknown;
-  static bool drawing = false;
-
   if(!status)
   {
     return;
@@ -80,7 +85,6 @@ void ViewModel::TakeFrame()
       return;
     }
 
-    KinectBody bodies[BODY_COUNT];
     result = sensor.getKBodyFrame(bodies);
     if(SUCCEEDED(result))
     {
@@ -159,23 +163,4 @@ void ViewModel::TakeFrame()
 
     emit SendDepthFrame(infrared);
   }
-}
-
-bool ViewModel::GetOpenGestureFileName(QString fileName)
-{
-  QFile file(fileName);
-  if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-  {
-    return false;
-  }
-  QTextStream in(&file);
-  Points temp;
-  while(!in.atEnd())
-  {
-    double x, y;
-    in >> x >> y;
-    temp.push_back(QVector2D(x, y));
-  }
-  drawingTemplate = true;
-  return true;
 }
