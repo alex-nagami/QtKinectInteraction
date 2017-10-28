@@ -44,7 +44,8 @@ private:
   // status bits
   enum Status
   {
-    Status_ShowUserHand = 0x2,
+    Status_Error = -1,
+    Status_ShowUserHand = 0,
     Status_ShowTemplate = 1,
     Status_DrawTemplate = 2
   };

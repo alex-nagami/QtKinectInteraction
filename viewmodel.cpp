@@ -8,9 +8,11 @@ ViewModel::ViewModel()
   {
     qDebug() << "Failed to load sensor";
     inited = false;
+    status = Status_Error;
     return;
   }
   inited = true;
+  status = Status_ShowUserHand;
 }
 
 Status ViewModel::GetStatus()
@@ -34,6 +36,7 @@ bool ViewModel::GetOpenGestureFileName(QString fileName)
     in >> x >> y;
     temp.push_back(QVector2D(x, y));
   }
+  status = Status_ShowTemplate;
   displayingTemplate = true;
   return true;
 }
@@ -44,13 +47,13 @@ bool ViewModel::CloseGesture()
   gestureTemplate.clear();
 }
 
-bool ViewModel::GetOpenGestureFileName(QString fileName)
+bool ViewModel::DrawGesture()
 {
-  QFile file(fileName);
-  if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-  {
-    return false;
-  }
+  status = Status_DrawTemplate;
+}
+
+bool ViewModel::GetSaveGestureFileName(QString fileName)
+{
 }
 
 void ViewModel::run()
