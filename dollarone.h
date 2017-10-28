@@ -17,16 +17,16 @@ const double goldRight = (sqrt(5)-1)/2;
 class DollarOne
 {
 public:
-  const int pointNum = 32;
-  const double gestureSize = 250;
-  const double leftLimit = -M_PI/4;
-  const double rightLimit = M_PI/4;
+  double gestureSize;
+  int    pointNum;
+  double leftLimit;
+  double rightLimit;
 
-  static Points Normalize(Points input);
+  static Points Normalize(Points input, double size = 250);
   static QVector2D BoundingBox(Points input);
   static QVector2D Center(Points input);
   static Points TranslateTo(Points input, const QVector2D center);
-  static Points ScaleTo(Points input, const double size);
+  static Points ScaleTo(Points input, double size);
   static Points Rotate(Points input, const double rad);
   static double PathLength(Points input);
   static Points Resample(Points input, const int nums);
@@ -34,12 +34,12 @@ public:
   static double Distance(Points a, Points b);
   static double DistanceAtBestAngle(Points a, Points b, double left, double right);
 
+  DollarOne();
   int AddTemplate(Points t);
   QPair<int, double> Recognize(Points input);
   bool DeleteTemplate(int index);
   void Clear();
 
-private:
   QVector<Points> templates;
 };
 

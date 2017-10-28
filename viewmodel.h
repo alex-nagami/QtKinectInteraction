@@ -20,27 +20,6 @@ class ViewModel : public QThread
   Q_OBJECT
 public:
   ViewModel();
-
-signals:
-  void Status(Status);
-  void SendDepthFrame(Mat);
-  void SendGestureFrame(Mat);
-
-public slots:
-  Status GetStatus();
-  bool GetOpenGestureFileName(QString);
-  bool CloseGesture();
-  bool DrawGesture();
-  bool GetSaveGestureFileName(QString);
-  bool GetLoadConfigFilenName(QString);
-  bool ChangeInput();
-
-private slots:
-  void TakeFrame();
-
-private:
-  void run();
-
   // status bits
   enum Status
   {
@@ -50,9 +29,30 @@ private:
     Status_DrawTemplate = 2
   };
 
+signals:
+  void SigStatus(Status);
+  void SendDepthFrame(Mat);
+  void SendGestureFrame(Mat);
+
+public slots:
+  bool GetOpenGestureFileName(QString);
+  void CloseGesture();
+  void DrawGesture();
+  void DrawGesturePoint(QVector2D point);
+  bool GetSaveGestureFileName(QString);
+//  bool GetLoadConfigFileName(QString);
+//  bool ChangeInput();
+
+private slots:
+  void TakeFrame();
+
+private:
+  void run();
+
   bool inited;
   Status status;
   bool mouseInput = true;
+  bool drawing = false;
 
   KinectSensor sensor;
   Mat infrared;
@@ -83,7 +83,8 @@ private:
   DollarOne dollarOne;
   StateMachine stateMachine;
 
-  QVector<Point2f> gestureTemplate;
+  Points gestureTemplate;
+  Points drawingGesture;
 };
 
 #endif // VIEWMODEL_H

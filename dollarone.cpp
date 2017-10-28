@@ -1,8 +1,16 @@
 #include "dollarone.h"
 
-Points DollarOne::Normalize(Points input)
+DollarOne::DollarOne()
 {
-  return ScaleTo(TranslateTo(input, QVector2D(0, 0)), 250);
+  pointNum = 32;
+  gestureSize = 250;
+  leftLimit = -M_PI/4;
+  rightLimit = M_PI/4;
+}
+
+Points DollarOne::Normalize(Points input, double size)
+{
+  return ScaleTo(TranslateTo(input, QVector2D(0, 0)), size);
 }
 
 QVector2D DollarOne::BoundingBox(Points input)
@@ -45,7 +53,7 @@ Points DollarOne::TranslateTo(Points input, const QVector2D center)
   return input;
 }
 
-Points DollarOne::ScaleTo(Points input, const double size)
+Points DollarOne::ScaleTo(Points input, double size)
 {
   QVector2D c = Center(input);
   QVector2D s = BoundingBox(input);

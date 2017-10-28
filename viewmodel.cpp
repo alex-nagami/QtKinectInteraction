@@ -1,6 +1,48 @@
 #include "viewmodel.h"
 
-ViewModel::ViewModel()
+static Point2f QV2D2P2f(QVector2D p) { return Point2f(p.x(), p.y()); }
+static QVector2D P2f2QV2D(Point2f p) { return QVector2D(p.x, p.y); }
+static Points VP2f2Ps(QVector<Point2f> ps)
+{
+  Points points;
+  for(int i=0; i<ps.size(); i++)
+  {
+    points.push_back(P2f2QV2D(ps[i]));
+  }
+  return points;
+}
+
+static void DrawTrack(Mat &input, QVector<Point2f> points)
+{
+  for(int i=0; i<points.size()-1; i++)
+  {
+//              qDebug() << "drawing line #" << i;
+    line(input, points[i], points[i+1], Scalar::all(0), 2);
+  }
+  for(int i=0; i<points.size(); i++)
+  {
+//              qDebug() << "drawing point #" << i;
+    circle(input, points[i], 2, Scalar(255, 0, 0), -1);
+  }
+}
+
+static void DrawTrack(Mat &input, Points points)
+{
+  for(int i=0; i<points.size()-1; i++)
+  {
+//              qDebug() << "drawing line #" << i;
+    line(input, QV2D2P2f(points[i]), QV2D2P2f(points[i+1]), Scalar::all(0), 2);
+  }
+  for(int i=0; i<points.size(); i++)
+  {
+//              qDebug() << "drawing point #" << i;
+    circle(input, QV2D2P2f(points[i]), 2, Scalar(255, 0, 0), -1);
+  }
+}
+
+ViewModel::ViewModel() :
+  leftHandStateMedian(),
+  rightHandStateMedian()
 {
   HRESULT result;
   result = sensor.init((FrameSourceTypes)(FrameSourceTypes_Depth | FrameSourceTypes_Infrared | FrameSourceTypes_Body));
@@ -15,12 +57,6 @@ ViewModel::ViewModel()
   status = Status_ShowUserHand;
 }
 
-Status ViewModel::GetStatus()
-{
-  emit Status(status);
-  return status;
-}
-
 bool ViewModel::GetOpenGestureFileName(QString fileName)
 {
   QFile file(fileName);
@@ -29,31 +65,54 @@ bool ViewModel::GetOpenGestureFileName(QString fileName)
     return false;
   }
   QTextStream in(&file);
-  Points temp;
   while(!in.atEnd())
   {
     double x, y;
     in >> x >> y;
-    temp.push_back(QVector2D(x, y));
+    gestureTemplate.push_back(QVector2D(x, y));
   }
+  gestureTemplate = DollarOne::Normalize(gestureTemplate, 300);
+  gestureTemplate = DollarOne::TranslateTo(gestureTemplate, QVector2D(256, 212));
+  gestureTemplate = DollarOne::Resample(gestureTemplate, dollarOne.pointNum);
+  dollarOne.AddTemplate(gestureTemplate);
+
   status = Status_ShowTemplate;
-  displayingTemplate = true;
   return true;
 }
 
-bool ViewModel::CloseGesture()
+void ViewModel::CloseGesture()
 {
   status = Status_ShowUserHand;
   gestureTemplate.clear();
 }
 
-bool ViewModel::DrawGesture()
+void ViewModel::DrawGesture()
 {
   status = Status_DrawTemplate;
+  drawingGesture.clear();
+}
+
+void ViewModel::DrawGesturePoint(QVector2D point)
+{
+  drawingGesture.push_back(point);
+  Mat drawingGestureMat(512, 424, CV_8UC3, Scalar::all(255));
+  DrawTrack(drawingGestureMat, drawingGesture);
+  emit SendGestureFrame(drawingGestureMat);
 }
 
 bool ViewModel::GetSaveGestureFileName(QString fileName)
 {
+  QFile file(fileName);
+  if(file.open(QIODevice::WriteOnly | QIODevice::Text))
+  {
+    return false;
+  }
+  QTextStream out(&file);
+  for(int i=0; i<drawingGesture.size(); i++)
+  {
+    out << drawingGesture[i].x() << " " << drawingGesture[i].y() << endl;
+  }
+  file.close();
 }
 
 void ViewModel::run()
@@ -73,6 +132,13 @@ void ViewModel::run()
 // Main data process here
 void ViewModel::TakeFrame()
 {
+  if(status == Status_ShowTemplate)
+  {
+    Mat gestureMat(512, 424, CV_8UC3, Scalar::all(255));
+    DrawTrack(gestureMat, gestureTemplate);
+    emit SendGestureFrame(gestureMat);
+  }
+
   if(!inited)
   {
     return;
@@ -134,38 +200,38 @@ void ViewModel::TakeFrame()
             dps[jointId].y = p.Y;
           }
 
-          if(lastRightHandState != HandState_Closed && bodies[i].right == HandState_Closed)
+          if(lastRightHandState != HandState_NotTracked || lastRightHandState != HandState_Unknown)
           {
-            drawing = true;
-            rightTraj.clear();
-          }
-          if(lastRightHandState == HandState_Closed && bodies[i].right != HandState_Closed)
-          {
-            drawing = false;
+            if(lastRightHandState != HandState_Closed && bodies[i].right == HandState_Closed)
+            {
+              drawing = true;
+              rightTraj.clear();
+            }
+            if(lastRightHandState == HandState_Closed && (bodies[i].right == HandState_Open || bodies[i].right == HandState_Lasso))
+            {
+              drawing = false;
+              qDebug() << "total" << dollarOne.templates.size() << "distance" << dollarOne.Recognize(VP2f2Ps(rightTraj));
+            }
+
+            if(bodies[i].right == HandState_Lasso || bodies[i].right == HandState_Closed || bodies[i].right == HandState_Open)
+            {
+              lastRightHandState = bodies[i].right;
+            }
           }
 
-          lastRightHandState = bodies[i].right;
-
-          if(drawing && !drawingTemplate)
+          if(status == Status_ShowUserHand && drawing)
           {
             rightTraj.push_back(dps[JointType_HandRight]);
 //            qDebug() << "rightTraj.size()=" << rightTraj.size();
             Mat trajMat(512, 424, CV_8UC3, Scalar::all(255));
-            for(int i=0; i<rightTraj.size()-1; i++)
-            {
-//              qDebug() << "drawing line #" << i;
-              line(trajMat, rightTraj[i], rightTraj[i+1], Scalar::all(0), 2);
-            }
-            for(int i=0; i<rightTraj.size(); i++)
-            {
-//              qDebug() << "drawing point #" << i;
-              circle(trajMat, rightTraj[i], 2, Scalar(255, 0, 0), -1);
-            }
+            DrawTrack(trajMat, rightTraj);
             emit SendGestureFrame(trajMat);
           }
 
           infrared = DrawBody(infrared, bodies[i].joints, dps, Scalar(0, 0, 255));
           infrared = DrawHand(infrared, dps[JointType_HandLeft], bodies[i].left, dps[JointType_HandRight], bodies[i].right);
+
+          break;
         }
       }
     }
