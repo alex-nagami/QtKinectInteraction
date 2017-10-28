@@ -7,13 +7,13 @@ ViewModel::ViewModel()
   if(FAILED(result))
   {
     qDebug() << "Failed to load sensor";
-    status = false;
+    inited = false;
     return;
   }
-  status = true;
+  inited = true;
 }
 
-bool ViewModel::GetStatus()
+Status ViewModel::GetStatus()
 {
   emit Status(status);
   return status;
@@ -34,8 +34,14 @@ bool ViewModel::GetOpenGestureFileName(QString fileName)
     in >> x >> y;
     temp.push_back(QVector2D(x, y));
   }
-  drawingTemplate = true;
+  displayingTemplate = true;
   return true;
+}
+
+bool ViewModel::CloseGesture()
+{
+  status = Status_ShowUserHand;
+  gestureTemplate.clear();
 }
 
 bool ViewModel::GetOpenGestureFileName(QString fileName)
@@ -64,7 +70,7 @@ void ViewModel::run()
 // Main data process here
 void ViewModel::TakeFrame()
 {
-  if(!status)
+  if(!inited)
   {
     return;
   }

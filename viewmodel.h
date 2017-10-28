@@ -22,12 +22,12 @@ public:
   ViewModel();
 
 signals:
-  void Status(bool);
+  void Status(Status);
   void SendDepthFrame(Mat);
   void SendGestureFrame(Mat);
 
 public slots:
-  bool GetStatus();
+  Status GetStatus();
   bool GetOpenGestureFileName(QString);
   bool CloseGesture();
   bool DrawGesture();
@@ -41,12 +41,19 @@ private slots:
 private:
   void run();
 
-  KinectSensor sensor;
-  bool status;
-  bool drawingTemplate;
+  // status bits
+  enum Status
+  {
+    Status_ShowUserHand = 0x2,
+    Status_ShowTemplate = 1,
+    Status_DrawTemplate = 2
+  };
+
+  bool inited;
+  Status status;
   bool mouseInput = true;
-  DollarOne dollarOne;
-  StateMachine stateMachine;
+
+  KinectSensor sensor;
   Mat infrared;
   KinectBody bodies[BODY_COUNT];
 
@@ -71,7 +78,11 @@ private:
   // right hand state recorder
   QVector<Point2f> rightTraj;
   HandState lastRightHandState = HandState_Unknown;
-  bool drawing = false;
+
+  DollarOne dollarOne;
+  StateMachine stateMachine;
+
+  QVector<Point2f> gestureTemplate;
 };
 
 #endif // VIEWMODEL_H
