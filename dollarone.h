@@ -35,12 +35,13 @@ public:
   static double DistanceAtBestAngle(Points a, Points b, double left, double right);
 
   DollarOne();
-  int AddTemplate(Points t);
+  int AddTemplate(Points t, QString name);
   QPair<int, double> Recognize(Points input);
   bool DeleteTemplate(int index);
   void Clear();
 
   QVector<Points> templates;
+  QVector<QString> names;
 };
 
 #endif // DOLLARONE_H

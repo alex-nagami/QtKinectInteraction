@@ -71,10 +71,12 @@ bool ViewModel::GetOpenGestureFileName(QString fileName)
     in >> x >> y;
     gestureTemplate.push_back(QVector2D(x, y));
   }
+
+  dollarOne.AddTemplate(gestureTemplate, QFileInfo(fileName).fileName());
+
   gestureTemplate = DollarOne::Normalize(gestureTemplate, 300);
   gestureTemplate = DollarOne::TranslateTo(gestureTemplate, QVector2D(256, 212));
   gestureTemplate = DollarOne::Resample(gestureTemplate, dollarOne.pointNum);
-  dollarOne.AddTemplate(gestureTemplate);
 
   status = Status_ShowTemplate;
   return true;
@@ -113,6 +115,11 @@ bool ViewModel::GetSaveGestureFileName(QString fileName)
     out << drawingGesture[i].x() << " " << drawingGesture[i].y() << endl;
   }
   file.close();
+}
+
+bool ViewModel::GetLoadConfigFileName(QString fileName)
+{
+  return stateMachine.LoadConfig(fileName);
 }
 
 void ViewModel::run()
@@ -200,7 +207,12 @@ void ViewModel::TakeFrame()
             dps[jointId].y = p.Y;
           }
 
-          if(lastRightHandState != HandState_NotTracked || lastRightHandState != HandState_Unknown)
+          if(bodies[i].right == HandState_NotTracked || bodies[i].right == HandState_Unknown)
+          {
+            bodies[i].right = lastRightHandState;
+          }
+
+          if(bodies[i].right != HandState_NotTracked && bodies[i].right != HandState_Unknown)
           {
             if(lastRightHandState != HandState_Closed && bodies[i].right == HandState_Closed)
             {
@@ -210,22 +222,28 @@ void ViewModel::TakeFrame()
             if(lastRightHandState == HandState_Closed && (bodies[i].right == HandState_Open || bodies[i].right == HandState_Lasso))
             {
               drawing = false;
-              qDebug() << "total" << dollarOne.templates.size() << "distance" << dollarOne.Recognize(VP2f2Ps(rightTraj));
+              Points userGesture = VP2f2Ps(rightTraj);
+              userGesture = DollarOne::Normalize(userGesture);
+              userGesture = DollarOne::Resample(userGesture, dollarOne.pointNum);
+              QPair<int, double> result = dollarOne.Recognize(userGesture);
+
+              qDebug() << "total" << dollarOne.templates.size() << "match" << result << "filename=" <<  dollarOne.names[result.first];
             }
 
-            if(bodies[i].right == HandState_Lasso || bodies[i].right == HandState_Closed || bodies[i].right == HandState_Open)
+            lastRightHandState = bodies[i].right;
+
+            if(drawing)
             {
-              lastRightHandState = bodies[i].right;
+              rightTraj.push_back(dps[JointType_HandRight]);
+              qDebug() << "rightTraj.size()=" << rightTraj.size();
             }
-          }
 
-          if(status == Status_ShowUserHand && drawing)
-          {
-            rightTraj.push_back(dps[JointType_HandRight]);
-//            qDebug() << "rightTraj.size()=" << rightTraj.size();
-            Mat trajMat(512, 424, CV_8UC3, Scalar::all(255));
-            DrawTrack(trajMat, rightTraj);
-            emit SendGestureFrame(trajMat);
+            if(status == Status_ShowUserHand)
+            {
+              Mat trajMat(512, 424, CV_8UC3, Scalar::all(255));
+              DrawTrack(trajMat, rightTraj);
+              emit SendGestureFrame(trajMat);
+            }
           }
 
           infrared = DrawBody(infrared, bodies[i].joints, dps, Scalar(0, 0, 255));

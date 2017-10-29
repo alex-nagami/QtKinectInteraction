@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QFileInfo>
 #include <QObject>
 #include <QThread>
 #include <QTimer>
@@ -40,7 +41,7 @@ public slots:
   void DrawGesture();
   void DrawGesturePoint(QVector2D point);
   bool GetSaveGestureFileName(QString);
-//  bool GetLoadConfigFileName(QString);
+  bool GetLoadConfigFileName(QString);
 //  bool ChangeInput();
 
 private slots:

@@ -101,20 +101,24 @@ Points DollarOne::Resample(Points input, const int nums)
     if(nowLen+thisEdge>=averageEdgeLen-1e-6)
     {
       double r1 = (averageEdgeLen - nowLen)/thisEdge;
-      result.push_back(r1*input[i]+(1-r1)*input[i-1]);
-      nowLen+=thisEdge;
-      nowLen-=averageEdgeLen;
+      QVector2D newP = r1*input[i]+(1-r1)*input[i-1];
+      result.push_back(newP);
+      input.insert(i, newP);
+      nowLen = 0;
     }
     else
     {
       nowLen+=thisEdge;
     }
   }
+  if(result.size()<nums)
+    result.push_back(input[input.size()-1]);
   return result;
 }
 
 double DollarOne::Distance(Points a, Points b)
 {
+  qDebug() << "a.size()=" << a.size() << " b.size()=" << b.size();
   if(a.size()!=b.size()) return -1;
   double sum = 0;
   for(int i=0; i<a.size(); i++)
@@ -127,7 +131,7 @@ double DollarOne::Distance(Points a, Points b)
 
 double DollarOne::DistanceAtBestAngle(Points a, Points b, double left, double right)
 {
-  if(fabs(left-right)<M_PI*1/180)
+  if(fabs(right-left)<M_PI*1/180)
   {
     return Distance(a, b);
   }
@@ -150,32 +154,33 @@ double DollarOne::DistanceAtBestAngle(Points a, Points b, double left, double ri
   }
 }
 
-int DollarOne::AddTemplate(Points t)
+int DollarOne::AddTemplate(Points t, QString name)
 {
-  t = Normalize(t);
+  t = Normalize(t, gestureSize);
   t = Resample(t, pointNum);
   templates.push_back(t);
+  names.push_back(name);
   return templates.size()-1;
 }
 
 QPair<int, double> DollarOne::Recognize(Points input)
 {
-  input = Normalize(input);
+  input = Normalize(input, gestureSize);
   input = Resample(input, pointNum);
 
-  double max = -1;
-  int maxn = -1;
+  double min = 1e20;
+  int minn = -1;
   for(int i=0; i<templates.size(); i++)
   {
     double score = DistanceAtBestAngle(input, templates[i], leftLimit, rightLimit);
-    if(score>max)
+    if(score<min)
     {
-      max = score;
-      maxn = i;
+      min = score;
+      minn = i;
     }
   }
 
-  return QPair<int, double>(maxn, max);
+  return QPair<int, double>(minn, min/(0.5*sqrt(2*gestureSize*gestureSize)));
 }
 
 bool DollarOne::DeleteTemplate(int index)
@@ -185,6 +190,7 @@ bool DollarOne::DeleteTemplate(int index)
     return false;
   }
   templates.remove(index);
+  names.remove(index);
   return true;
 }
 
