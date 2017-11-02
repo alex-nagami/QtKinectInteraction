@@ -7,6 +7,11 @@
 #include <QString>
 #include <QTextStream>
 #include <QVector>
+#include <WinUser.h>
+#include <Windows.h>
+
+#define LEFT (true)
+#define RIGHT (false)
 
 class Action
 {
@@ -14,6 +19,8 @@ public:
   enum ActionType
   {
     ActionType_Unknown = -1,
+
+    ActionType_MouseCursor,
 
     ActionType_Mouse,
     ActionType_MouseDown,
@@ -39,6 +46,7 @@ public:
 class StateTransfer
 {
 public:
+  bool hand; // true=left, false=right;
   QString from;
   QString trans;
   QString to;
@@ -56,13 +64,16 @@ public:
 
   StateMachine();
   bool LoadConfig(QString fileName);
-  void Transfer(QString transName);
+  void Transfer(QString transName, bool hand);
   void Clear();
+  void ExecuteAction(Action action);
+  void HandMove(QVector2D left, QVector2D right);
 
 private:
   QVector<QString> stateList;
   QVector<StateTransfer> transferList;
   QString nowState;
+  QMap<QString, bool> cursorMap;
 };
 
 #endif // STATEMACHINE_H
