@@ -42,7 +42,6 @@ public slots:
   void DrawGesturePoint(QVector2D point);
   bool GetSaveGestureFileName(QString);
   bool GetLoadConfigFileName(QString);
-//  bool ChangeInput();
 
 private slots:
   void TakeFrame();

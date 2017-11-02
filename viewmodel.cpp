@@ -119,7 +119,17 @@ bool ViewModel::GetSaveGestureFileName(QString fileName)
 
 bool ViewModel::GetLoadConfigFileName(QString fileName)
 {
-  return stateMachine.LoadConfig(fileName);
+  QFileInfo fileInfo(fileName);
+  bool result = stateMachine.LoadConfig(fileName);
+
+  if(!result) return result;
+
+  dollarOne.Clear();
+  QString fileFolder = fileInfo.absoluteDir();
+  for(int i=0; i<stateMachine.transferList.size(); i++)
+  {
+    QString newGestureName = stateMachine.transferList[i].trans;
+  }
 }
 
 void ViewModel::run()
@@ -253,7 +263,6 @@ void ViewModel::TakeFrame()
         }
       }
     }
-
     emit SendDepthFrame(infrared);
   }
 }

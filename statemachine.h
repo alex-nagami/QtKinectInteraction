@@ -69,7 +69,6 @@ public:
   void ExecuteAction(Action action);
   void HandMove(QVector2D left, QVector2D right);
 
-private:
   QVector<QString> stateList;
   QVector<StateTransfer> transferList;
   QString nowState;
