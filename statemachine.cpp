@@ -99,7 +99,7 @@ bool StateMachine::LoadConfig(QString fileName)
       }
       else if (hand == "RIGHT")
       {
-        transRUle.hand = RIGHT;
+        transRule.hand = RIGHT;
       }
       else
       {
@@ -294,7 +294,7 @@ void StateMachine::ExecuteAction(Action action)
     input.mi.dx = 0;
     input.mi.dy = 0;
     input.mi.mouseData = action.mouseWheelAmount;
-    input.mi.dwExtraInfo = GetMessageExtreInfo();
+    input.mi.dwExtraInfo = GetMessageExtraInfo();
     input.mi.dwFlags = MOUSEEVENTF_HWHEEL;
     SendInput(1, &input, sizeof(input));
   }
@@ -309,7 +309,7 @@ void StateMachine::HandMove(QVector2D left, QVector2D right)
 {
   if(cursorMap.find(nowState) != cursorMap.end())
   {
-    bool bh = cursorMap.find(nowState).reference;
+    bool bh = cursorMap.find(nowState).value();
     QVector2D source;
     if(bh == LEFT) source = left;
     else source = right;

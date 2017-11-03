@@ -2,6 +2,8 @@
 #define DOLLARONE_H
 
 #include <QDebug>
+#include <QFile>
+#include <QFileInfo>
 #include <QMap>
 #include <QVector>
 #include <QVector2D>
@@ -36,6 +38,7 @@ public:
 
   DollarOne();
   int AddTemplate(Points t, QString name);
+  int AddTemplate(QString fileName);
   QPair<int, double> Recognize(Points input);
   bool DeleteTemplate(int index);
   void Clear();

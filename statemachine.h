@@ -1,14 +1,16 @@
 #ifndef STATEMACHINE_H
 #define STATEMACHINE_H
 
+#include <QDir>
 #include <QFile>
 #include <QMap>
 #include <QObject>
 #include <QString>
 #include <QTextStream>
 #include <QVector>
-#include <WinUser.h>
+#include <QVector2D>
 #include <Windows.h>
+#include <WinUser.h>
 
 #define LEFT (true)
 #define RIGHT (false)

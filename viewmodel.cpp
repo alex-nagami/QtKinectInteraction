@@ -125,10 +125,11 @@ bool ViewModel::GetLoadConfigFileName(QString fileName)
   if(!result) return result;
 
   dollarOne.Clear();
-  QString fileFolder = fileInfo.absoluteDir();
+  QString fileFolder = fileInfo.absolutePath();
   for(int i=0; i<stateMachine.transferList.size(); i++)
   {
     QString newGestureName = stateMachine.transferList[i].trans;
+    dollarOne.AddTemplate(fileFolder+"/"+newGestureName);
   }
 }
 
@@ -236,6 +237,7 @@ void ViewModel::TakeFrame()
               userGesture = DollarOne::Normalize(userGesture);
               userGesture = DollarOne::Resample(userGesture, dollarOne.pointNum);
               QPair<int, double> result = dollarOne.Recognize(userGesture);
+              stateMachine.Transfer(dollarOne.names[result.first], RIGHT);
 
               qDebug() << "total" << dollarOne.templates.size() << "match" << result << "filename=" <<  dollarOne.names[result.first];
             }

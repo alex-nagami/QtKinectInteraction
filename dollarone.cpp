@@ -53,6 +53,25 @@ Points DollarOne::TranslateTo(Points input, const QVector2D center)
   return input;
 }
 
+int DollarOne::AddTemplate(QString fileName)
+{
+  QFile file(fileName);
+  if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
+    return -1;
+  }
+  QFileInfo fileInfo;
+  Points newTemp;
+  QTextStream in(&file);
+  while(!in.atEnd())
+  {
+    double x, y;
+    in >> x >> y;
+    newTemp.push_back(QVector2D(x, y));
+  }
+  AddTemplate(newTemp, fileInfo.fileName());
+}
+
 Points DollarOne::ScaleTo(Points input, double size)
 {
   QVector2D c = Center(input);
