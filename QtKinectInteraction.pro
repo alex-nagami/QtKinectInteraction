@@ -18,6 +18,7 @@ TEMPLATE = app
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += _USE_OPENCV
 DEFINES += _USE_MATH_DEFINES
+DEFINES += "WINVER=0x0500"
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -67,3 +68,6 @@ CONFIG(release)
 {
     LIBS += "C:/Libs/OpenCV31/opencv/build/x64/vc14/lib/opencv_world310.lib"
 }
+
+# Windows Kits
+LIBS += "C:/Program Files (x86)/Windows Kits/8.1/Lib/winv6.3/um/x64/user32.lib"
