@@ -34,7 +34,8 @@ SOURCES += \
     kinectopencvtools.cpp \
     jointfilter.cpp \
     dollarone.cpp \
-    statemachine.cpp
+    statemachine.cpp \
+    handprocess.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -43,7 +44,8 @@ HEADERS += \
     KinectOpenCvTools.h \
     jointfilter.h \
     dollarone.h \
-    statemachine.h
+    statemachine.h \
+    handprocess.h
 
 FORMS += \
         mainwindow.ui

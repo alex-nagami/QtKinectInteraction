@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 
   QObject::connect(&w, &MainWindow::SigOpenGesture, &viewModel, &ViewModel::GetOpenGestureFileName);
   QObject::connect(&w, &MainWindow::SigCloseGesture, &viewModel, &ViewModel::CloseGesture);
+  QObject::connect(&w, &MainWindow::SigLoadConfig, &viewModel, &ViewModel::GetLoadConfigFileName);
 
 
   w.show();

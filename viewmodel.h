@@ -47,8 +47,6 @@ private slots:
   void TakeFrame();
 
 private:
-  void run();
-
   bool inited;
   Status status;
   bool mouseInput = true;
@@ -85,6 +83,8 @@ private:
 
   Points gestureTemplate;
   Points drawingGesture;
+
+  void run();
 };
 
 #endif // VIEWMODEL_H

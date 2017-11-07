@@ -60,7 +60,7 @@ int DollarOne::AddTemplate(QString fileName)
   {
     return -1;
   }
-  QFileInfo fileInfo;
+  QFileInfo fileInfo(fileName);
   Points newTemp;
   QTextStream in(&file);
   while(!in.atEnd())
@@ -69,6 +69,7 @@ int DollarOne::AddTemplate(QString fileName)
     in >> x >> y;
     newTemp.push_back(QVector2D(x, y));
   }
+  qDebug() << "AddTemplate:" << fileInfo.absoluteFilePath() << fileInfo.fileName();
   AddTemplate(newTemp, fileInfo.fileName());
 }
 

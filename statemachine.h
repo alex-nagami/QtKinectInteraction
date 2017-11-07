@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QMap>
 #include <QObject>
+#include <QDebug>
 #include <QString>
 #include <QTextStream>
 #include <QVector>
@@ -62,7 +63,7 @@ signals:
   void GetNewTransfer(QString fileName);
 
 public:
-  const QString originalState = "ORIGINAL";
+  const QString originalState = "ORIGIN";
 
   StateMachine();
   bool LoadConfig(QString fileName);

@@ -1,12 +1,10 @@
 #include "statemachine.h"
 
-#define CHECKSTREAM(x, y) if(y=x.atEnd())break;
-#define BREAK(x) x=true;break;
-
 bool CheckMember(QVector<QString> array, QString e)
 {
   for(int i=0; i<array.size(); i++)
   {
+//    qDebug() << "array[i]=" << array[i];
     if(array[i] == e) return true;
   }
   return false;
@@ -24,7 +22,7 @@ bool StateMachine::LoadConfig(QString fileName)
     return false;
   }
 
-  QTextStream in;
+  QTextStream in(&file);
   QVector<QString> tempStateList;
   tempStateList.push_back(originalState);
   QVector<StateTransfer> tempTransferList;
@@ -33,12 +31,14 @@ bool StateMachine::LoadConfig(QString fileName)
 
   StateTransfer transRule;
   transRule.from = originalState;
+  transRule.hand = RIGHT;
 
   while(!in.atEnd())
   {
     QString cmd;
     in >> cmd;
     cmd = cmd.toUpper();
+//    qDebug() << "StateMachine::LoadConfig" << " : " << "cmd=" << cmd;
 
     if(cmd == "#")  // comments
     {
@@ -48,48 +48,52 @@ bool StateMachine::LoadConfig(QString fileName)
     else if(cmd == "ADD") // state declarations
     {
       QString newState;
-      CHECKSTREAM(in, error);
+      if(error = in.atEnd()) break;
       in >> newState;
       newState = newState.toUpper();
-      if(CheckMember(tempStateList, newState)) BREAK(error);
+//      qDebug() << "CheckMember(tempStateList, newState)=" << CheckMember(tempStateList, newState);
+      if(CheckMember(tempStateList, newState)) {error=true;qDebug() << "breaked";break;}
+      tempStateList.push_back(newState);
+//      qDebug() << "tempStateList.size()=" << tempStateList.size();
     }
     else if(cmd == "STATE")
     {
-      CHECKSTREAM(in, error);
+      if(error = in.atEnd()) break;
       in >> transRule.from;
       transRule.from = transRule.from.toUpper();
-      if(!CheckMember(tempStateList, transRule.from)) BREAK(error);
+      if(!CheckMember(tempStateList, transRule.from)) {error=true;break;}
     }
     else if(cmd == "CURSOR")
     {
       QString state;
-      CHECKSTREAM(in, error);
+      if(error = in.atEnd()) break;
       in >> state;
       state = state.toUpper();
 
       if(!CheckMember(tempStateList, state))
       {
-        BREAK(error);
+        error=true;break;
       }
       if(cursorMap.find(state)!=cursorMap.end())
       {
-        BREAK(error); // cant assign two cursor input source in a single state
+        error=true;break;
+         // cant assign two cursor input source in a single state
       }
 
-      CHECKSTREAM(in, error);
+      if(error = in.atEnd()) break;
       QString hand;
       in >> hand;
       hand = hand.toUpper();
       bool bh;
       if(hand == "LEFT") bh = LEFT;
       else if(hand == "RIGHT") bh = RIGHT;
-      else BREAK(error);
+      else {error=true;break;}
 
       tempCursorMap.insert(state, bh);
     }
     else if(cmd == "HAND")
     {
-      CHECKSTREAM(in, error);
+      if(error = in.atEnd()) break;
       QString hand;
       in >> hand;
       hand = hand.toUpper();
@@ -103,16 +107,17 @@ bool StateMachine::LoadConfig(QString fileName)
       }
       else
       {
-        BREAK(error);
+        error=true;break;
       }
     }
     else if(cmd == "TEMPLATE")
     {
       QString actionTypeStr;
-      CHECKSTREAM(in, error);
+      if(error = in.atEnd()) break;
       in >> transRule.trans;
+      transRule.trans = transRule.trans.toUpper();
 
-      CHECKSTREAM(in, error);
+      if(error = in.atEnd()) break;
       in >> actionTypeStr;
       actionTypeStr = actionTypeStr.toUpper();
 
@@ -125,7 +130,7 @@ bool StateMachine::LoadConfig(QString fileName)
         if(actionTypeStr == "MOUSE") transRule.action.type = Action::ActionType_Mouse;
         if(actionTypeStr == "MOUSEDOWN") transRule.action.type = Action::ActionType_MouseDown;
         if(actionTypeStr == "MOUSEUP") transRule.action.type = Action::ActionType_MouseUp;
-        CHECKSTREAM(in, error);
+        if(error = in.atEnd()) break;
         QString key;
         in >> key;
         key = key.toUpper();
@@ -139,13 +144,13 @@ bool StateMachine::LoadConfig(QString fileName)
         }
         else
         {
-          BREAK(error);
+          error=true;break;
         }
       }
       else if (actionTypeStr == "MOUSEWHEEL")
       {
         transRule.action.type = Action::ActionType_MouseWheel;
-        CHECKSTREAM(in, error);
+        if(error = in.atEnd()) break;
         in >> transRule.action.mouseWheelAmount;
       }
       else if (actionTypeStr == "KEY" || actionTypeStr == "KEYDOWN" || actionTypeStr == "KEYUP")
@@ -153,21 +158,21 @@ bool StateMachine::LoadConfig(QString fileName)
         if(actionTypeStr == "KEY") transRule.action.type = Action::ActionType_Key;
         if(actionTypeStr == "KEYDOWN") transRule.action.type = Action::ActionType_KeyDown;
         if(actionTypeStr == "KEYUP") transRule.action.type = Action::ActionType_KeyUp;
-        CHECKSTREAM(in, error);
+        if(error = in.atEnd()) break;
         in >> transRule.action.keyVK;
       }
       else if (actionTypeStr == "PROGRAM")
       {
         transRule.action.type = Action::ActionType_Program;
         QString command;
-        CHECKSTREAM(in, error);
+        if(error = in.atEnd()) break;
         in >> command;
         transRule.action.programPath = command;
         if(command[0] == '"')
         {
           while(command[command.length()-1]!='"')
           {
-            CHECKSTREAM(in, error);
+            if(error = in.atEnd()) break;
             in >> command;
             transRule.action.programPath = transRule.action.programPath+" " + command;
           }
@@ -175,13 +180,13 @@ bool StateMachine::LoadConfig(QString fileName)
       }
       else
       {
-        BREAK(error);
+        error=true;break;
       }
 
-      CHECKSTREAM(in, error);
+      if(error = in.atEnd()) break;
       in >> transRule.to;
       transRule.to = transRule.to.toUpper();
-      if(!CheckMember(tempStateList, transRule.to)) BREAK(error);
+      if(!CheckMember(tempStateList, transRule.to)) {error=true;break;}
 
 
       if(!error)
@@ -192,7 +197,7 @@ bool StateMachine::LoadConfig(QString fileName)
       }
       else
       {
-        BREAK(error);
+        error=true;break;
       }
     }
   }
@@ -210,12 +215,16 @@ bool StateMachine::LoadConfig(QString fileName)
 
 void StateMachine::Transfer(QString transName, bool hand)
 {
+  transName = transName.toUpper();
+  qDebug() << "Transfer :" << nowState << transName << hand;
   for(int i=0; i<transferList.size(); i++)
   {
+    qDebug() << i << " : " << transferList[i].from << transferList[i].to << transferList[i].trans << transferList[i].hand;
     if(transferList[i].from == nowState)
     {
       if(transferList[i].trans == transName && transferList[i].hand == hand)
       {
+        qDebug() << "action" << transName;
         ExecuteAction(transferList[i].action);
         nowState = transferList[i].to;
         break;

@@ -1,0 +1,3 @@
+# this is a comment
+add box
+template box KEY 69 origin
