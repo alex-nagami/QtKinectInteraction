@@ -18,6 +18,7 @@ public:
   QVector<Point2f> track;
   HandState last;
   bool side;
+  bool drawing;
 };
 
 #endif // HANDPROCESS_H
