@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
   itemGesture = nullptr;
   sceneGesture = nullptr;
+  setWindowFlags(Qt::WindowStaysOnTopHint);
 }
 
 MainWindow::~MainWindow()

@@ -12,20 +12,6 @@ static Points VP2f2Ps(QVector<Point2f> ps)
   return points;
 }
 
-static void DrawTrack(Mat &input, QVector<Point2f> points)
-{
-  for(int i=0; i<points.size()-1; i++)
-  {
-//              qDebug() << "drawing line #" << i;
-    line(input, points[i], points[i+1], Scalar::all(0), 2);
-  }
-  for(int i=0; i<points.size(); i++)
-  {
-//              qDebug() << "drawing point #" << i;
-    circle(input, points[i], 2, Scalar(255, 0, 0), -1);
-  }
-}
-
 static void DrawTrack(Mat &input, Points points)
 {
   for(int i=0; i<points.size()-1; i++)
@@ -41,8 +27,12 @@ static void DrawTrack(Mat &input, Points points)
 }
 
 ViewModel::ViewModel() :
+  stateMachine(),
+  dollarOne(),
   leftHandStateMedian(),
-  rightHandStateMedian()
+  rightHandStateMedian(),
+  left(LEFT, &stateMachine, &dollarOne),
+  right(RIGHT, &stateMachine, &dollarOne)
 {
   HRESULT result;
   result = sensor.init((FrameSourceTypes)(FrameSourceTypes_Depth | FrameSourceTypes_Infrared | FrameSourceTypes_Body));
@@ -223,10 +213,14 @@ void ViewModel::TakeFrame()
             dps[jointId].y = p.Y;
           }
 
+          stateMachine.HandMove(QVector2D(dps[JointType_HandLeft].x, dps[JointType_HandLeft].y), QVector2D(dps[JointType_HandRight].x, dps[JointType_HandRight].y));
+
+          Mat trajMat(512, 424, CV_8UC3, Scalar::all(255));
+          trajMat = left.Process(dps[JointType_HandLeft], bodies[i].left, trajMat);
+          trajMat = right.Process(dps[JointType_HandRight], bodies[i].right, trajMat);
+
           if(status == Status_ShowUserHand)
           {
-            Mat trajMat(512, 424, CV_8UC3, Scalar::all(255));
-            DrawTrack(trajMat, rightTraj);
             emit SendGestureFrame(trajMat);
           }
 

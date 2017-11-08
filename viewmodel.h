@@ -15,6 +15,7 @@ using namespace cv;
 #include "jointfilter.h"
 #include "dollarone.h"
 #include "statemachine.h"
+#include "handprocess.h"
 
 class ViewModel : public QThread
 {
@@ -74,9 +75,9 @@ private:
   LSEFilter rightLSEZ;
   MedianFilter rightHandStateMedian;
 
-  // right hand state recorder
-  QVector<Point2f> rightTraj;
-  HandState lastRightHandState = HandState_Unknown;
+  // hand processer
+  HandProcess left;
+  HandProcess right;
 
   DollarOne dollarOne;
   StateMachine stateMachine;

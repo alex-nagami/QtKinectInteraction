@@ -1,14 +1,44 @@
 #include "handprocess.h"
 
-HandProcess::HandProcess(bool _side)
+static Point2f QV2D2P2f(QVector2D p) { return Point2f(p.x(), p.y()); }
+static QVector2D P2f2QV2D(Point2f p) { return QVector2D(p.x, p.y); }
+static Points VP2f2Ps(QVector<Point2f> ps)
+{
+  Points points;
+  for(int i=0; i<ps.size(); i++)
+  {
+    points.push_back(P2f2QV2D(ps[i]));
+  }
+  return points;
+}
+
+HandProcess::HandProcess(bool _side, StateMachine *sm, DollarOne *d)
 {
   side = _side;
   drawing = false;
   last = HandState_Unknown;
+  stateMachine = sm;
+  dollarOne = d;
 }
 
-QVector2D<Point2f> HandProcess::Process(Point2f pos, HandState state)
+void HandProcess::DrawTrack(Mat &input, QVector<Point2f> points)
 {
+  for(int i=0; i<points.size()-1; i++)
+  {
+//              qDebug() << "drawing line #" << i;
+    line(input, points[i], points[i+1], Scalar::all(0), 2);
+  }
+  for(int i=0; i<points.size(); i++)
+  {
+//              qDebug() << "drawing point #" << i;
+    circle(input, points[i], 2, Scalar(255, 0, 0), -1);
+  }
+}
+
+Mat HandProcess::Process(Point2f pos, HandState state, Mat input)
+{
+  Mat result;
+  if(stateMachine == nullptr || dollarOne == nullptr) return result;
   if(state == HandState_NotTracked || state == HandState_Unknown)
   {
     state = last;
@@ -24,20 +54,27 @@ QVector2D<Point2f> HandProcess::Process(Point2f pos, HandState state)
     if(last == HandState_Closed && (state == HandState_Open || state == HandState_Lasso))
     {
       drawing = false;
-      Points userGesture = VP2f2Ps(rightTraj);
+      Points userGesture = VP2f2Ps(track);
       userGesture = DollarOne::Normalize(userGesture);
-      userGesture = DollarOne::Resample(userGesture, dollarOne.pointNum);
-      QPair<int, double> result = dollarOne.Recognize(userGesture);
-      qDebug() << "total" << dollarOne.templates.size() << "match" << result << dollarOne.names[result.first];
-      stateMachine.Transfer(dollarOne.names[result.first], side);
+      userGesture = DollarOne::Resample(userGesture, dollarOne->pointNum);
+      QPair<int, double> result = dollarOne->Recognize(userGesture);
+      qDebug() << "total" << dollarOne->templates.size() << "match" << result << dollarOne->names[result.first];
+      stateMachine->Transfer(dollarOne->names[result.first], side);
     }
 
     last = state;
 
     if(drawing)
     {
-      rightTraj.push_back(dps[JointType_HandRight]);
-      qDebug() << "rightTraj.size()=" << rightTraj.size();
+      track.push_back(pos);
+      qDebug() << "track.size()=" << track.size();
     }
   }
+
+  if(!input.empty())
+  {
+    result = input.clone();
+    DrawTrack(result, track);
+  }
+  return result;
 }
