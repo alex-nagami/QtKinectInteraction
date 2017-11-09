@@ -54,6 +54,7 @@ bool ViewModel::GetOpenGestureFileName(QString fileName)
   {
     return false;
   }
+  gestureTemplate.clear();
   QTextStream in(&file);
   while(!in.atEnd())
   {
@@ -62,7 +63,7 @@ bool ViewModel::GetOpenGestureFileName(QString fileName)
     gestureTemplate.push_back(QVector2D(x, y));
   }
 
-  dollarOne.AddTemplate(gestureTemplate, QFileInfo(fileName).fileName());
+//  dollarOne.AddTemplate(gestureTemplate, QFileInfo(fileName).fileName());
 
   gestureTemplate = DollarOne::Normalize(gestureTemplate, 300);
   gestureTemplate = DollarOne::TranslateTo(gestureTemplate, QVector2D(256, 212));
@@ -213,7 +214,10 @@ void ViewModel::TakeFrame()
             dps[jointId].y = p.Y;
           }
 
-          stateMachine.HandMove(QVector2D(dps[JointType_HandLeft].x, dps[JointType_HandLeft].y), QVector2D(dps[JointType_HandRight].x, dps[JointType_HandRight].y));
+
+          stateMachine.HandMove(
+                P2f2QV2D(dps[JointType_HandLeft]-dps[JointType_ShoulderLeft]), bodies[i].left,
+                P2f2QV2D(dps[JointType_HandRight]-dps[JointType_ShoulderRight]), bodies[i].right);
 
           Mat trajMat(512, 424, CV_8UC3, Scalar::all(255));
           trajMat = left.Process(dps[JointType_HandLeft], bodies[i].left, trajMat);

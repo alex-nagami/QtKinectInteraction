@@ -314,13 +314,98 @@ void StateMachine::ExecuteAction(Action action)
   }
 }
 
-void StateMachine::HandMove(QVector2D left, QVector2D right)
+void StateMachine::HandMove(QVector2D left, HandState lhs, QVector2D right, HandState rhs)
 {
+  const double xratio = 1.0e-1;
+  const double yratio = 1.0e-1;
+
+  static HandState lastState = HandState_Unknown;
   if(cursorMap.find(nowState) != cursorMap.end())
   {
     bool bh = cursorMap.find(nowState).value();
     QVector2D source;
-    if(bh == LEFT) source = left;
-    else source = right;
+    HandState hsSource;
+    if(bh == LEFT)
+    {
+      source = left;
+      hsSource = lhs;
+    }
+    else
+    {
+      source = right;
+      hsSource = rhs;
+    }
+
+    INPUT mouseMove;
+    mouseMove.type = INPUT_MOUSE;
+    mouseMove.mi.dx = source.x()*xratio;
+    mouseMove.mi.dy = source.y()*yratio;
+    mouseMove.mi.time = GetTickCount();
+    mouseMove.mi.dwExtraInfo = GetMessageExtraInfo();
+    mouseMove.mi.dwFlags = MOUSEEVENTF_MOVE;
+    qDebug() << "HandMove: " << source;
+    SendInput(1, &mouseMove, sizeof(mouseMove));
+
+    if(hsSource == HandState_Unknown || hsSource == HandState_NotTracked)
+    {
+      hsSource = lastState;
+    }
+
+    if(hsSource != HandState_Unknown && hsSource != HandState_NotTracked)
+    {
+      // left key = closed
+      if(lastState == HandState_Open && hsSource == HandState_Closed)
+      {
+        INPUT mouseMove;
+        mouseMove.type = INPUT_MOUSE;
+        mouseMove.mi.dx = 0;
+        mouseMove.mi.dy = 0;
+        mouseMove.mi.mouseData = 0;
+        mouseMove.mi.dwExtraInfo = GetMessageExtraInfo();
+        mouseMove.mi.time = GetTickCount();
+        mouseMove.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+        SendInput(1, &mouseMove, sizeof(mouseMove));
+      }
+      if(lastState == HandState_Closed && hsSource == HandState_Open)
+      {
+        INPUT mouseMove;
+        mouseMove.type = INPUT_MOUSE;
+        mouseMove.mi.dx = 0;
+        mouseMove.mi.dy = 0;
+        mouseMove.mi.mouseData = 0;
+        mouseMove.mi.dwExtraInfo = GetMessageExtraInfo();
+        mouseMove.mi.time = GetTickCount();
+        mouseMove.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+        SendInput(1, &mouseMove, sizeof(mouseMove));
+      }
+
+      // right key = lasso
+      if(lastState == HandState_Open && hsSource == HandState_Lasso)
+      {
+        INPUT mouseMove;
+        mouseMove.type = INPUT_MOUSE;
+        mouseMove.mi.dx = 0;
+        mouseMove.mi.dy = 0;
+        mouseMove.mi.mouseData = 0;
+        mouseMove.mi.dwExtraInfo = GetMessageExtraInfo();
+        mouseMove.mi.time = GetTickCount();
+        mouseMove.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+        SendInput(1, &mouseMove, sizeof(mouseMove));
+      }
+      if(lastState == HandState_Lasso && hsSource == HandState_Open)
+      {
+        INPUT mouseMove;
+        mouseMove.type = INPUT_MOUSE;
+        mouseMove.mi.dx = 0;
+        mouseMove.mi.dy = 0;
+        mouseMove.mi.mouseData = 0;
+        mouseMove.mi.dwExtraInfo = GetMessageExtraInfo();
+        mouseMove.mi.time = GetTickCount();
+        mouseMove.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+        SendInput(1, &mouseMove, sizeof(mouseMove));
+      }
+
+      lastState = hsSource;
+    }
   }
 }

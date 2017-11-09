@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>702</width>
-    <height>269</height>
+    <width>440</width>
+    <height>163</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <widget class="QGroupBox" name="groupDepth">
       <property name="minimumSize">
        <size>
-        <width>281</width>
-        <height>251</height>
+        <width>150</width>
+        <height>145</height>
        </size>
       </property>
       <property name="title">
@@ -31,8 +31,8 @@
         <widget class="QGraphicsView" name="gvDepth">
          <property name="minimumSize">
           <size>
-           <width>256</width>
-           <height>212</height>
+           <width>128</width>
+           <height>106</height>
           </size>
          </property>
         </widget>
@@ -44,8 +44,8 @@
      <widget class="QGroupBox" name="groupGesture">
       <property name="minimumSize">
        <size>
-        <width>281</width>
-        <height>251</height>
+        <width>150</width>
+        <height>145</height>
        </size>
       </property>
       <property name="title">
@@ -56,8 +56,8 @@
         <widget class="QGraphicsView" name="gvGesture">
          <property name="minimumSize">
           <size>
-           <width>256</width>
-           <height>212</height>
+           <width>128</width>
+           <height>106</height>
           </size>
          </property>
         </widget>
@@ -70,7 +70,7 @@
       <property name="minimumSize">
        <size>
         <width>110</width>
-        <height>251</height>
+        <height>145</height>
        </size>
       </property>
       <property name="title">
@@ -79,6 +79,12 @@
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <widget class="QPushButton" name="buttonOpenGesture">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>17</height>
+          </size>
+         </property>
          <property name="text">
           <string>Open Gesture</string>
          </property>
@@ -86,6 +92,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="buttonCloseGesture">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>17</height>
+          </size>
+         </property>
          <property name="text">
           <string>Close Gesture</string>
          </property>
@@ -93,6 +105,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="buttonDrawGesture">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>17</height>
+          </size>
+         </property>
          <property name="text">
           <string>Draw Gesture</string>
          </property>
@@ -100,6 +118,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="buttonSaveGesture">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>17</height>
+          </size>
+         </property>
          <property name="text">
           <string>Save Gesture</string>
          </property>
@@ -107,6 +131,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="buttonLoadConfig">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>17</height>
+          </size>
+         </property>
          <property name="text">
           <string>Load Config</string>
          </property>
@@ -114,6 +144,12 @@
        </item>
        <item>
         <widget class="QPushButton" name="buttonChangeInput">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>17</height>
+          </size>
+         </property>
          <property name="text">
           <string>Change Input</string>
          </property>

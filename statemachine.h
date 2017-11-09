@@ -12,6 +12,7 @@
 #include <QVector2D>
 #include <Windows.h>
 #include <WinUser.h>
+#include "EasyKinect.h"
 
 #define LEFT (true)
 #define RIGHT (false)
@@ -70,7 +71,7 @@ public:
   void Transfer(QString transName, bool hand);
   void Clear();
   void ExecuteAction(Action action);
-  void HandMove(QVector2D left, QVector2D right);
+  void HandMove(QVector2D left, HandState lhs, QVector2D right, HandState rhs);
 
   QVector<QString> stateList;
   QVector<StateTransfer> transferList;

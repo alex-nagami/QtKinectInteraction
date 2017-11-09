@@ -73,3 +73,7 @@ CONFIG(release)
 
 # Windows Kits
 LIBS += "C:/Program Files (x86)/Windows Kits/8.1/Lib/winv6.3/um/x64/user32.lib"
+
+DISTFILES += \
+    .gitignore \
+    README.md

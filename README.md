@@ -12,5 +12,7 @@ Theoretically, this can be used for any Windows application and can achieve some
 * [Kinect SDK v2.0](https://www.microsoft.com/en-us/download/details.aspx?id=44561)
 * [Qt 5.9.0](https://www.qt.io/)
 
+## Config File Grammar
+
 ## In-coming
-* Gesture recognization
+* More comfortable mouse cursor speed

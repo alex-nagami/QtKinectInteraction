@@ -1,3 +1,11 @@
 # this is a comment
 add box
-template box KEY 69 origin
+cursor origin left
+template box KEY 69 box
+template prev mousewheel 120
+# template next mousewheel -120
+state box template box KEY 70 origin
+
+# hand left template box KEY 71 box
+# hand left state box
+template box KEY 72 origin
