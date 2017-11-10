@@ -10,8 +10,7 @@
 #include <opencv2/opencv.hpp>
 #include <math.h>
 using namespace cv;
-
-typedef QVector<QVector2D> Points;
+#include "publictools.h"
 
 const double goldLeft = 1-(sqrt(5)-1)/2;
 const double goldRight = (sqrt(5)-1)/2;

@@ -6,14 +6,15 @@
 
 class QGraphicsViewWithMouseEvent : public QGraphicsView
 {
+  Q_OBJECT
 public:
-  QGraphicsViewWithMouseEvent();
+  QGraphicsViewWithMouseEvent(QWidget* parent=nullptr);
 
 signals:
-  void MouseEvent(QMouseEvent);
-  void MousePressEvent(QMouseEvent);
-  void MouseReleaseEvent(QMouseEvent);
-  void MouseMoveEvent(QMouseEvent);
+  void MouseEvent(QMouseEvent*);
+  void MousePressEvent(QMouseEvent*);
+  void MouseReleaseEvent(QMouseEvent*);
+  void MouseMoveEvent(QMouseEvent*);
 
 protected:
   void mousePressEvent(QMouseEvent* event) override;

@@ -35,12 +35,13 @@ signals:
   void SigStatus(Status);
   void SendDepthFrame(Mat);
   void SendGestureFrame(Mat);
+  void SendGestureScene(QGraphicsScene*);
 
 public slots:
   bool GetOpenGestureFileName(QString);
   void CloseGesture();
   void DrawGesture();
-  void DrawGesturePoint(QVector2D point);
+  void DrawGesturePoint(QVector<QVector2D> point);
   bool GetSaveGestureFileName(QString);
   bool GetLoadConfigFileName(QString);
 

@@ -1,28 +1,16 @@
 #include "viewmodel.h"
 
-static Point2f QV2D2P2f(QVector2D p) { return Point2f(p.x(), p.y()); }
-static QVector2D P2f2QV2D(Point2f p) { return QVector2D(p.x, p.y); }
-static Points VP2f2Ps(QVector<Point2f> ps)
-{
-  Points points;
-  for(int i=0; i<ps.size(); i++)
-  {
-    points.push_back(P2f2QV2D(ps[i]));
-  }
-  return points;
-}
-
 static void DrawTrack(Mat &input, Points points)
 {
   for(int i=0; i<points.size()-1; i++)
   {
 //              qDebug() << "drawing line #" << i;
-    line(input, QV2D2P2f(points[i]), QV2D2P2f(points[i+1]), Scalar::all(0), 4);
+    line(input, PublicTools::QV2D2P2f(points[i]), PublicTools::QV2D2P2f(points[i+1]), Scalar::all(0), 4);
   }
   for(int i=0; i<points.size(); i++)
   {
 //              qDebug() << "drawing point #" << i;
-    circle(input, QV2D2P2f(points[i]), 8, Scalar(255, 0, 0), -1);
+    circle(input, PublicTools::QV2D2P2f(points[i]), 8, Scalar(255, 0, 0), -1);
   }
 }
 
@@ -63,11 +51,12 @@ bool ViewModel::GetOpenGestureFileName(QString fileName)
     gestureTemplate.push_back(QVector2D(x, y));
   }
 
-//  dollarOne.AddTemplate(gestureTemplate, QFileInfo(fileName).fileName());
+  gestureTemplate = DollarOne::Normalize(gestureTemplate, 1.0);
+  gestureTemplate = DollarOne::TranslateTo(gestureTemplate, QVector2D(0.5, 0.5));
 
-  gestureTemplate = DollarOne::Normalize(gestureTemplate, 300);
-  gestureTemplate = DollarOne::TranslateTo(gestureTemplate, QVector2D(256, 212));
-  gestureTemplate = DollarOne::Resample(gestureTemplate, dollarOne.pointNum);
+  QGraphicsScene* scene = new QGraphicsScene(0.0, 0.0, 100.0, 100.0);
+  PublicTools::DrawPoints(gestureTemplate, scene);
+  emit SendGestureScene(scene);
 
   status = Status_ShowTemplate;
   return true;
@@ -85,12 +74,18 @@ void ViewModel::DrawGesture()
   drawingGesture.clear();
 }
 
-void ViewModel::DrawGesturePoint(QVector2D point)
+void ViewModel::DrawGesturePoint(QVector<QVector2D> point)
 {
-  drawingGesture.push_back(point);
-  Mat drawingGestureMat(512, 424, CV_8UC3, Scalar::all(255));
-  DrawTrack(drawingGestureMat, drawingGesture);
-  emit SendGestureFrame(drawingGestureMat);
+  if(status == Status_DrawTemplate)
+  {
+    drawingGesture = point;
+//    Mat drawingGestureMat(512, 424, CV_8UC3, Scalar::all(255));
+//    DrawTrack(drawingGestureMat, drawingGesture);
+//    emit SendGestureFrame(drawingGestureMat);
+    QGraphicsScene* scene = new QGraphicsScene(0.0, 0.0, 100.0, 100.0);
+    PublicTools::DrawPoints(drawingGesture, scene);
+    emit SendGestureScene(scene);
+  }
 }
 
 bool ViewModel::GetSaveGestureFileName(QString fileName)
@@ -149,9 +144,12 @@ void ViewModel::TakeFrame()
 {
   if(status == Status_ShowTemplate)
   {
-    Mat gestureMat(512, 424, CV_8UC3, Scalar::all(255));
-    DrawTrack(gestureMat, gestureTemplate);
-    emit SendGestureFrame(gestureMat);
+//    Mat gestureMat(512, 424, CV_8UC3, Scalar::all(255));
+//    DrawTrack(gestureMat, gestureTemplate);
+    QGraphicsScene* scene = new QGraphicsScene(0.0, 0.0, 100.0, 100.0);
+    PublicTools::DrawPoints(gestureTemplate, scene);
+    emit SendGestureScene(scene);
+//    emit SendGestureFrame(gestureMat);
   }
 
   if(!inited)
@@ -217,16 +215,25 @@ void ViewModel::TakeFrame()
 
 
           stateMachine.HandMove(
-                P2f2QV2D(dps[JointType_HandLeft]-dps[JointType_ShoulderLeft]), bodies[i].left,
-                P2f2QV2D(dps[JointType_HandRight]-dps[JointType_ShoulderRight]), bodies[i].right);
+                PublicTools::P2f2QV2D(dps[JointType_HandLeft]-dps[JointType_ShoulderLeft]), bodies[i].left,
+                PublicTools::P2f2QV2D(dps[JointType_HandRight]-dps[JointType_ShoulderRight]), bodies[i].right);
 
-          Mat trajMat(512, 424, CV_8UC3, Scalar::all(255));
-          trajMat = left.Process(dps[JointType_HandLeft], bodies[i].left, trajMat);
-          trajMat = right.Process(dps[JointType_HandRight], bodies[i].right, trajMat);
+//          Mat trajMat(512, 424, CV_8UC3, Scalar::all(255));
+          QGraphicsScene* scene = new QGraphicsScene(0.0, 0.0, 100.0, 100.0);
+          left.Process(dps[JointType_HandLeft], bodies[i].left, scene);
+          right.Process(dps[JointType_HandRight], bodies[i].right, scene);
 
           if(status == Status_ShowUserHand)
           {
-            emit SendGestureFrame(trajMat);
+//              QGraphicsScene* sdddd = new QGraphicsScene(0.0, 0.0, 100.0, 100.0);
+//              Points ps;
+//              ps.push_back(QVector2D(0.0, 0.0));
+//              ps.push_back(QVector2D(0.5, 0.5));
+//              ps.push_back(QVector2D(1.0, 1.0));
+//              PublicTools::DrawPoints(ps, sdddd);
+//              sdddd->addRect(0.0, 0.0, 100.0, 100.0);
+//            emit SendGestureFrame(trajMat);
+            emit SendGestureScene(scene);
           }
 
           infrared = DrawBody(infrared, bodies[i].joints, dps, Scalar(0, 0, 255));

@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
   sceneGesture = nullptr;
   setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint);
   setWindowOpacity(0.8);
+  mouseDrawing = false;
 }
 
 MainWindow::~MainWindow()
@@ -109,7 +110,66 @@ void MainWindow::on_buttonExit_clicked()
   exit(0);
 }
 
-void MainWindow::on_gvGesture_MousePressEvent(const QMouseEvent &event)
+void MainWindow::on_gvGesture_MouseEvent(QMouseEvent *event)
 {
-  qDebug() << "MousePressed: " << event.pos();
+  if(mouseDrawing)
+  {
+    QVector2D pos(event->pos());
+    pos.setX(pos.x()/ui->gvGesture->rect().width());
+    pos.setY(pos.y()/ui->gvGesture->rect().height());
+    drawPoints.push_back(pos);
+    qDebug() << "MouseMove: " << pos;
+    emit SigDrawPoint(drawPoints);
+  }
+}
+
+void MainWindow::on_gvGesture_MousePressEvent(QMouseEvent *event)
+{
+  qDebug() << "MousePressed: " << event->pos();
+  if(event->button() == Qt::LeftButton)
+  {
+    mouseDrawing = true;
+    drawPoints.clear();
+  }
+}
+
+void MainWindow::on_gvGesture_MouseReleaseEvent(QMouseEvent *)
+{
+  qDebug() << "MouseReleased: " << drawPoints.size();
+  mouseDrawing = false;
+  drawPoints.clear();
+}
+
+void MainWindow::mouseMoveEvent(QMouseEvent *event)
+{
+  if(event->buttons().testFlag(Qt::LeftButton))
+  {
+    this->move(this->pos()+event->pos()-mouseOrigin);
+  }
+}
+
+void MainWindow::mousePressEvent(QMouseEvent *event)
+{
+  if(event->button() == Qt::LeftButton)
+  {
+    mouseOrigin = event->pos();
+  }
+}
+
+void MainWindow::GetGestureScene(QGraphicsScene *scene)
+{
+//  qDebug() << "get scene";
+  ui->gvGesture->setScene(scene);
+  ui->gvGesture->fitInView(ui->gvGesture->sceneRect());
+  ui->gvGesture->show();
+//  QGraphicsScene* sdddd = new QGraphicsScene(0.0, 0.0, 100.0, 100.0);
+//  Points ps;
+//  ps.push_back(QVector2D(0.0, 0.0));
+//  ps.push_back(QVector2D(0.5, 0.5));
+//  ps.push_back(QVector2D(1.0, 1.0));
+//  PublicTools::DrawPoints(ps, sdddd);
+//  sdddd->addRect(0.0, 0.0, 100.0, 100.0);
+//  ui->gvGesture->setScene(sdddd);
+//  ui->gvGesture->fitInView(ui->gvGesture->scene()->sceneRect());
+//  ui->gvGesture->show();
 }

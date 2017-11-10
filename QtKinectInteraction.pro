@@ -47,7 +47,8 @@ HEADERS += \
     dollarone.h \
     statemachine.h \
     handprocess.h \
-    qgraphicsviewwithmouseevent.h
+    qgraphicsviewwithmouseevent.h \
+    publictools.h
 
 FORMS += \
         mainwindow.ui

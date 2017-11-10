@@ -9,6 +9,7 @@
 #include "statemachine.h"
 #include "dollarone.h"
 #include "jointfilter.h"
+#include "publictools.h"
 using namespace cv;
 
 class HandProcess
@@ -16,10 +17,10 @@ class HandProcess
 public:
   HandProcess(bool _side=false, StateMachine* sm=nullptr, DollarOne *d=nullptr);
 
-  void DrawTrack(Mat &input, QVector<Point2f> points);
-  Mat Process(Point2f pos, HandState state, Mat input);
+  void Process(Point2f pos, HandState state, QGraphicsScene* scene);
 
   QVector<Point2f> track;
+  QVector<Point2f> paint;
   HandState last;
   bool side;
   bool drawing;

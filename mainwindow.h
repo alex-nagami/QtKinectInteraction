@@ -9,6 +9,7 @@
 #include <QGraphicsScene>
 #include <opencv2/opencv.hpp>
 using namespace cv;
+#include "publictools.h"
 
 namespace Ui {
 class MainWindow;
@@ -26,6 +27,7 @@ signals:
   void SigSaveGesture(QString);
   void SigLoadConfig(QString);
   void SigChangeInput();
+  void SigDrawPoint(QVector<QVector2D>);
 
 public:
   explicit MainWindow(QWidget *parent = 0);
@@ -34,6 +36,7 @@ public:
 public slots:
   void GetDepthFrame(Mat);
   void GetGestureFrame(Mat);
+  void GetGestureScene(QGraphicsScene* scene);
 
 private slots:
   void on_buttonOpenGesture_clicked();
@@ -50,7 +53,15 @@ private slots:
 
   void on_buttonExit_clicked();
 
-  void on_gvGesture_MousePressEvent(const QMouseEvent &);
+  void on_gvGesture_MouseEvent(QMouseEvent *event);
+
+  void on_gvGesture_MousePressEvent(QMouseEvent *);
+
+  void on_gvGesture_MouseReleaseEvent(QMouseEvent *);
+
+protected:
+  void mouseMoveEvent(QMouseEvent *event) override;
+  void mousePressEvent(QMouseEvent *event) override;
 
 private:
   // items for depth display
@@ -62,7 +73,10 @@ private:
   QGraphicsScene* sceneGesture;
 
   Ui::MainWindow *ui;
+  bool mouseDrawing;
+  QVector<QVector2D> drawPoints;
 
+  QPoint mouseOrigin;
 };
 
 #endif // MAINWINDOW_H

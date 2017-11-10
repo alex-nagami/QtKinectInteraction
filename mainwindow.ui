@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
-    <height>163</height>
+    <width>610</width>
+    <height>213</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,8 @@
      <widget class="QGroupBox" name="groupDepth">
       <property name="minimumSize">
        <size>
-        <width>150</width>
-        <height>145</height>
+        <width>235</width>
+        <height>195</height>
        </size>
       </property>
       <property name="title">
@@ -44,8 +44,8 @@
      <widget class="QGroupBox" name="groupGesture">
       <property name="minimumSize">
        <size>
-        <width>150</width>
-        <height>145</height>
+        <width>235</width>
+        <height>195</height>
        </size>
       </property>
       <property name="title">
@@ -70,7 +70,7 @@
       <property name="minimumSize">
        <size>
         <width>110</width>
-        <height>145</height>
+        <height>195</height>
        </size>
       </property>
       <property name="title">
@@ -82,7 +82,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>17</height>
+           <height>22</height>
           </size>
          </property>
          <property name="text">
@@ -95,7 +95,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>17</height>
+           <height>22</height>
           </size>
          </property>
          <property name="text">
@@ -108,7 +108,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>17</height>
+           <height>22</height>
           </size>
          </property>
          <property name="text">
@@ -121,7 +121,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>17</height>
+           <height>22</height>
           </size>
          </property>
          <property name="text">
@@ -134,7 +134,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>17</height>
+           <height>22</height>
           </size>
          </property>
          <property name="text">
@@ -147,7 +147,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>17</height>
+           <height>22</height>
           </size>
          </property>
          <property name="text">
@@ -160,7 +160,7 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>17</height>
+           <height>22</height>
           </size>
          </property>
          <property name="text">
@@ -181,10 +181,10 @@
    <extends>QGraphicsView</extends>
    <header location="global">qgraphicsviewwithmouseevent.h</header>
    <slots>
-    <signal>MouseEvent(QMouseEvent)</signal>
-    <signal>MouseMoveEvent(QMouseEvent)</signal>
-    <signal>MousePressEvent(QMouseEvent)</signal>
-    <signal>MouseReleaseEvent(QMouseEvent)</signal>
+    <signal>MouseEvent(QMouseEvent*)</signal>
+    <signal>MouseMoveEvent(QMouseEvent*)</signal>
+    <signal>MousePressEvent(QMouseEvent*)</signal>
+    <signal>MouseReleaseEvent(QMouseEvent*)</signal>
    </slots>
   </customwidget>
  </customwidgets>

@@ -1,5 +1,7 @@
 # QtKinectInteraction
 
+### Version 1.0 Beta
+
 ## Demo(Nov. 10, 2017)
 [Demo]("/demo/demo 20171110.mp4")
 
@@ -16,7 +18,12 @@ Theoretically, this can be used for any Windows application and can achieve some
 * [Qt 5.9.0](https://www.qt.io/)
 
 ## Config File Grammar
+Will write this later. It's simple if you read statemachine.cpp.
 
 ## In-coming
 * More comfortable mouse cursor speed
 * Bug fixing
+
+## Release Notes
+### Nov. 11, 2017
+Too late to write a note
