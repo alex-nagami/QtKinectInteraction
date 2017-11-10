@@ -1,8 +1,10 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QDebug>
 #include <QFileDialog>
 #include <QMainWindow>
+#include <QMouseEvent>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <opencv2/opencv.hpp>
@@ -45,6 +47,10 @@ private slots:
   void on_buttonLoadConfig_clicked();
 
   void on_buttonChangeInput_clicked();
+
+  void on_buttonExit_clicked();
+
+  void on_gvGesture_MousePressEvent(const QMouseEvent &);
 
 private:
   // items for depth display

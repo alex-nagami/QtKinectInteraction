@@ -35,7 +35,8 @@ SOURCES += \
     jointfilter.cpp \
     dollarone.cpp \
     statemachine.cpp \
-    handprocess.cpp
+    handprocess.cpp \
+    qgraphicsviewwithmouseevent.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -45,7 +46,8 @@ HEADERS += \
     jointfilter.h \
     dollarone.h \
     statemachine.h \
-    handprocess.h
+    handprocess.h \
+    qgraphicsviewwithmouseevent.h
 
 FORMS += \
         mainwindow.ui

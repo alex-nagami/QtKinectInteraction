@@ -17,12 +17,12 @@ static void DrawTrack(Mat &input, Points points)
   for(int i=0; i<points.size()-1; i++)
   {
 //              qDebug() << "drawing line #" << i;
-    line(input, QV2D2P2f(points[i]), QV2D2P2f(points[i+1]), Scalar::all(0), 2);
+    line(input, QV2D2P2f(points[i]), QV2D2P2f(points[i+1]), Scalar::all(0), 4);
   }
   for(int i=0; i<points.size(); i++)
   {
 //              qDebug() << "drawing point #" << i;
-    circle(input, QV2D2P2f(points[i]), 2, Scalar(255, 0, 0), -1);
+    circle(input, QV2D2P2f(points[i]), 8, Scalar(255, 0, 0), -1);
   }
 }
 

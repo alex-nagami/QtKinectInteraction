@@ -11,8 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
   itemGesture = nullptr;
   sceneGesture = nullptr;
-  setWindowFlags(Qt::WindowStaysOnTopHint);
-//  setWindowOpacity(0.5);
+  setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint | Qt::CustomizeWindowHint);
+  setWindowOpacity(0.8);
 }
 
 MainWindow::~MainWindow()
@@ -102,4 +102,14 @@ void MainWindow::on_buttonLoadConfig_clicked()
 void MainWindow::on_buttonChangeInput_clicked()
 {
   emit SigChangeInput();
+}
+
+void MainWindow::on_buttonExit_clicked()
+{
+  exit(0);
+}
+
+void MainWindow::on_gvGesture_MousePressEvent(const QMouseEvent &event)
+{
+  qDebug() << "MousePressed: " << event.pos();
 }
