@@ -16,3 +16,7 @@ Theoretically, this can be used for any Windows application and can achieve some
 
 ## In-coming
 * More comfortable mouse cursor speed
+* Remove semi-opaque effect
+* Bug fixing
+
+## Release Log

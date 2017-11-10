@@ -38,7 +38,7 @@ bool StateMachine::LoadConfig(QString fileName)
     QString cmd;
     in >> cmd;
     cmd = cmd.toUpper();
-//    qDebug() << "StateMachine::LoadConfig" << " : " << "cmd=" << cmd;
+    qDebug() << "StateMachine::LoadConfig" << " : " << "cmd=" << cmd;
 
     if(cmd == "#")  // comments
     {
@@ -116,10 +116,12 @@ bool StateMachine::LoadConfig(QString fileName)
       if(error = in.atEnd()) break;
       in >> transRule.trans;
       transRule.trans = transRule.trans.toUpper();
+      qDebug() << "trans=" << transRule.trans;
 
       if(error = in.atEnd()) break;
       in >> actionTypeStr;
       actionTypeStr = actionTypeStr.toUpper();
+      qDebug() << "actionTypeStr=" << actionTypeStr;
 
       if(actionTypeStr == "MOUSECURSOR")
       {

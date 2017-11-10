@@ -53,13 +53,19 @@ Mat HandProcess::Process(Point2f pos, HandState state, Mat input)
     }
     if(last == HandState_Closed && (state == HandState_Open || state == HandState_Lasso))
     {
+      qDebug() << "track ended";
       drawing = false;
       Points userGesture = VP2f2Ps(track);
-      userGesture = DollarOne::Normalize(userGesture);
-      userGesture = DollarOne::Resample(userGesture, dollarOne->pointNum);
+      qDebug() << "into ps";
       QPair<int, double> result = dollarOne->Recognize(userGesture);
-      qDebug() << "total" << dollarOne->templates.size() << "match" << result << dollarOne->names[result.first];
-      stateMachine->Transfer(dollarOne->names[result.first], side);
+      if(result.first>=0 && result.first<dollarOne->names.size())
+      {
+        qDebug() << "total" << dollarOne->templates.size() << "match" << result << dollarOne->names[result.first];
+      }
+      if(result.second < 0.4)
+      {
+        stateMachine->Transfer(dollarOne->names[result.first], side);
+      }
     }
 
     last = state;

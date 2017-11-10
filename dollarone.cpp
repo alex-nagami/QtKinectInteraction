@@ -186,13 +186,18 @@ int DollarOne::AddTemplate(Points t, QString name)
 QPair<int, double> DollarOne::Recognize(Points input)
 {
   input = Normalize(input, gestureSize);
+  qDebug() << "DollarOne::Recognize :" << "normalized";
   input = Resample(input, pointNum);
+  qDebug() << "DollarOne::Recognize :" << "resampled";
 
   double min = 1e20;
   int minn = -1;
+  qDebug() << "DollarOne::Recognize :" << "templates.size()=" << templates.size();
   for(int i=0; i<templates.size(); i++)
   {
-    double score = DistanceAtBestAngle(input, templates[i], leftLimit, rightLimit);
+    qDebug() << "DollarOne::Recognize :" << "compare sample with template #" << i << "total " << templates.size();
+    double score;
+    score = DistanceAtBestAngle(input, templates[i], leftLimit, rightLimit);
     if(score<min)
     {
       min = score;

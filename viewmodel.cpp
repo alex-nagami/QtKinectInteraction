@@ -119,7 +119,8 @@ bool ViewModel::GetLoadConfigFileName(QString fileName)
   dollarOne.Clear();
   QString fileFolder = fileInfo.absolutePath();
   qDebug() << "ViewModel::GetLoadConfigFileName : " << "fileFolder=" << fileFolder;
-  qDebug() << "ViewModel::GetLoadConfigFileName : " << "stateMachien.transferList.size()=" << stateMachine.transferList.size();
+  qDebug() << "ViewModel::GetLoadConfigFileName : " << "stateMachine.transferList.size()=" << stateMachine.transferList.size();
+  qDebug() << "ViewModel::GetLoadConfigFileName : " << "stateMachine.stateList.size()=" << stateMachine.stateList.size();
   for(int i=0; i<stateMachine.transferList.size(); i++)
   {
     QString newGestureName = stateMachine.transferList[i].trans;

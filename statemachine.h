@@ -17,6 +17,20 @@
 #define LEFT (true)
 #define RIGHT (false)
 
+struct ErrorInfo
+{
+  enum ErrorCode{
+    Error_Success = 0,
+    Error_InvalidToken,
+    Error_MissingToken
+  };
+
+  ErrorCode code;
+  QString info;
+  QString relatedItem;
+  int lineNum;
+};
+
 class Action
 {
 public:
@@ -64,6 +78,7 @@ signals:
   void GetNewTransfer(QString fileName);
 
 public:
+
   const QString originalState = "ORIGIN";
 
   StateMachine();

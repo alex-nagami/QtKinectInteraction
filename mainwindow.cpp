@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
   itemGesture = nullptr;
   sceneGesture = nullptr;
   setWindowFlags(Qt::WindowStaysOnTopHint);
-  setWindowOpacity(0.5);
+//  setWindowOpacity(0.5);
 }
 
 MainWindow::~MainWindow()
