@@ -3,7 +3,7 @@
 ### Version 1.0 Beta
 
 ## Demo(Nov. 10, 2017)
-[Demo](Demo/demo 20171110.mp4)
+[Demo](Demo/demo20171110.mp4)
 
 ## Introduction
 This is an improved Qt Version of our [project](https://github.com/zkyf/Kinect-Interaction-Tool). QtKinectInteraction is a tool for interaction with Windows applications by sending keyboard and mouse to the OS. User can specify their own gestures and meanings of the gestures.
