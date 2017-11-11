@@ -47,7 +47,9 @@ bool ViewModel::GetOpenGestureFileName(QString fileName)
   while(!in.atEnd())
   {
     double x, y;
-    in >> x >> y;
+    in >> x;
+    if(in.atEnd()) break;
+    in >> y;
     gestureTemplate.push_back(QVector2D(x, y));
   }
 
@@ -90,26 +92,34 @@ void ViewModel::DrawGesturePoint(QVector<QVector2D> point)
 
 bool ViewModel::GetSaveGestureFileName(QString fileName)
 {
+  qDebug() << "GetSaveGestureFileName" << fileName;
   QFile file(fileName);
-  if(file.open(QIODevice::WriteOnly | QIODevice::Text))
+  if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
   {
     return false;
   }
   QTextStream out(&file);
+//  out << "haha" << endl;
   for(int i=0; i<drawingGesture.size(); i++)
   {
+//    qDebug() << "save point #" << i;
     out << drawingGesture[i].x() << " " << drawingGesture[i].y() << endl;
   }
   file.close();
+  status = Status_ShowUserHand;
 }
 
 bool ViewModel::GetLoadConfigFileName(QString fileName)
 {
   qDebug() << "ViewModel::GetLoadConfigFileName : " << "fileName=" << fileName;
   QFileInfo fileInfo(fileName);
-  bool result = stateMachine.LoadConfig(fileName);
+  ErrorInfo result = stateMachine.LoadConfig(fileName);
 
-  if(result) return result;
+  if(result.code != ErrorInfo::Error_Success)
+  {
+    emit SendLoadConfigError(result);
+    return false;
+  }
 
   dollarOne.Clear();
   QString fileFolder = fileInfo.absolutePath();

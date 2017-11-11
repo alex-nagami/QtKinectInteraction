@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/Test">
+        <file>Test/box</file>
+        <file>Test/config.txt</file>
+        <file>Test/next</file>
+        <file>Test/prev</file>
+    </qresource>
+</RCC>

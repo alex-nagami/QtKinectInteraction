@@ -36,6 +36,7 @@ signals:
   void SendDepthFrame(Mat);
   void SendGestureFrame(Mat);
   void SendGestureScene(QGraphicsScene*);
+  void SendLoadConfigError(ErrorInfo);
 
 public slots:
   bool GetOpenGestureFileName(QString);

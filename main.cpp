@@ -9,9 +9,12 @@ int main(int argc, char *argv[])
   ViewModel viewModel;
   MainWindow w;
 
+  qRegisterMetaType<ErrorInfo>("ErrorInfo");
+
   QObject::connect(&viewModel, &ViewModel::SendDepthFrame, &w, &MainWindow::GetDepthFrame, Qt::QueuedConnection);
   QObject::connect(&viewModel, &ViewModel::SendGestureFrame, &w, &MainWindow::GetGestureFrame, Qt::QueuedConnection);
   QObject::connect(&viewModel, &ViewModel::SendGestureScene, &w, &MainWindow::GetGestureScene, Qt::QueuedConnection);
+  QObject::connect(&viewModel, &ViewModel::SendLoadConfigError, &w, &MainWindow::GetLoadConfigError, Qt::QueuedConnection);
 
   QObject::connect(&w, &MainWindow::SigOpenGesture, &viewModel, &ViewModel::GetOpenGestureFileName, Qt::QueuedConnection);
   QObject::connect(&w, &MainWindow::SigCloseGesture, &viewModel, &ViewModel::CloseGesture, Qt::QueuedConnection);

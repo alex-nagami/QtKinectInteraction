@@ -4,10 +4,12 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QMouseEvent>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <opencv2/opencv.hpp>
+#include "statemachine.h"
 using namespace cv;
 #include "publictools.h"
 
@@ -37,6 +39,7 @@ public slots:
   void GetDepthFrame(Mat);
   void GetGestureFrame(Mat);
   void GetGestureScene(QGraphicsScene* scene);
+  void GetLoadConfigError(ErrorInfo info);
 
 private slots:
   void on_buttonOpenGesture_clicked();
@@ -62,6 +65,7 @@ private slots:
 protected:
   void mouseMoveEvent(QMouseEvent *event) override;
   void mousePressEvent(QMouseEvent *event) override;
+  void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
   // items for depth display
@@ -77,6 +81,9 @@ private:
   QVector<QVector2D> drawPoints;
 
   QPoint mouseOrigin;
+
+  bool drawTemplate = false;
+  bool movingWindow = false;
 };
 
 #endif // MAINWINDOW_H

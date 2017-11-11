@@ -22,13 +22,17 @@ struct ErrorInfo
   enum ErrorCode{
     Error_Success = 0,
     Error_InvalidToken,
-    Error_MissingToken
+    Error_InvalidStateName,
+    Error_UnexpectedEOF,
+    Error_ConflictCursor,
+    Error_NoSuchFile
   };
 
   ErrorCode code;
   QString info;
-  QString relatedItem;
   int lineNum;
+
+  ErrorInfo() : code(Error_Success), info("Success") {}
 };
 
 class Action
@@ -82,7 +86,7 @@ public:
   const QString originalState = "ORIGIN";
 
   StateMachine();
-  bool LoadConfig(QString fileName);
+  ErrorInfo LoadConfig(QString fileName);
   void Transfer(QString transName, bool hand);
   void Clear();
   void ExecuteAction(Action action);

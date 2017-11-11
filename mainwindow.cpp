@@ -80,10 +80,12 @@ void MainWindow::on_buttonCloseGesture_clicked()
 void MainWindow::on_buttonDrawGesture_clicked()
 {
   emit SigDrawGesture();
+  drawTemplate = true;
 }
 
 void MainWindow::on_buttonSaveGesture_clicked()
 {
+  if(!drawTemplate) return;
   QString fileName = QFileDialog::getSaveFileName(this, "Save gesture");
   if(fileName!="")
   {
@@ -142,7 +144,7 @@ void MainWindow::on_gvGesture_MouseReleaseEvent(QMouseEvent *)
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-  if(event->buttons().testFlag(Qt::LeftButton))
+  if(movingWindow)
   {
     this->move(this->pos()+event->pos()-mouseOrigin);
   }
@@ -152,7 +154,16 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 {
   if(event->button() == Qt::LeftButton)
   {
+    movingWindow = true;
     mouseOrigin = event->pos();
+  }
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+  if(event->button() == Qt::LeftButton)
+  {
+    movingWindow = false;
   }
 }
 
@@ -172,4 +183,12 @@ void MainWindow::GetGestureScene(QGraphicsScene *scene)
 //  ui->gvGesture->setScene(sdddd);
 //  ui->gvGesture->fitInView(ui->gvGesture->scene()->sceneRect());
 //  ui->gvGesture->show();
+}
+
+void MainWindow::GetLoadConfigError(ErrorInfo info)
+{
+  if(info.code!=ErrorInfo::Error_Success)
+  {
+    QMessageBox::information(this, "Error while loading config", info.info);
+  }
 }

@@ -14,12 +14,15 @@ StateMachine::StateMachine()
 {
 }
 
-bool StateMachine::LoadConfig(QString fileName)
+ErrorInfo StateMachine::LoadConfig(QString fileName)
 {
+  ErrorInfo result;
   QFile file(fileName);
   if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
   {
-    return false;
+    result.code = ErrorInfo::Error_NoSuchFile;
+    result.info = "File "+fileName+" doesn't exist or can't be opened";
+    return result;
   }
 
   QTextStream in(&file);
@@ -48,20 +51,43 @@ bool StateMachine::LoadConfig(QString fileName)
     else if(cmd == "ADD") // state declarations
     {
       QString newState;
-      if(error = in.atEnd()) break;
+      if(error = in.atEnd())
+      {
+        result.code = ErrorInfo::Error_UnexpectedEOF;
+        result.info = "Unexpected EOF after ADD";
+        break;
+      }
       in >> newState;
       newState = newState.toUpper();
 //      qDebug() << "CheckMember(tempStateList, newState)=" << CheckMember(tempStateList, newState);
-      if(CheckMember(tempStateList, newState)) {error=true;qDebug() << "breaked";break;}
+      if(CheckMember(tempStateList, newState))
+      {
+        result.code = ErrorInfo::Error_InvalidStateName;
+        result.info = "State name "+newState+" has already been added";
+        error=true;
+//        qDebug() << "breaked";
+        break;
+      }
       tempStateList.push_back(newState);
 //      qDebug() << "tempStateList.size()=" << tempStateList.size();
     }
     else if(cmd == "STATE")
     {
-      if(error = in.atEnd()) break;
+      if(error = in.atEnd())
+      {
+        result.code = ErrorInfo::Error_UnexpectedEOF;
+        result.info = "Unexpected EOF after STATE";
+        break;
+      }
       in >> transRule.from;
       transRule.from = transRule.from.toUpper();
-      if(!CheckMember(tempStateList, transRule.from)) {error=true;break;}
+      if(!CheckMember(tempStateList, transRule.from))
+      {
+        result.code = ErrorInfo::Error_InvalidStateName;
+        result.info = "State name "+transRule.from+" should be added before being referenced";
+        error=true;
+        break;
+      }
     }
     else if(cmd == "CURSOR")
     {
@@ -72,28 +98,50 @@ bool StateMachine::LoadConfig(QString fileName)
 
       if(!CheckMember(tempStateList, state))
       {
-        error=true;break;
+        result.code = ErrorInfo::Error_InvalidStateName;
+        result.info = "State name "+state+" should be added before being referenced";
+        error=true;
+        break;
       }
       if(cursorMap.find(state)!=cursorMap.end())
       {
-        error=true;break;
+        result.code = ErrorInfo::Error_ConflictCursor;
+        result.info = "State "+state+" can only be assigned ONE cursor pointer";
+        error=true;
+        break;
          // cant assign two cursor input source in a single state
       }
 
-      if(error = in.atEnd()) break;
+      if(error = in.atEnd())
+      {
+        result.code = ErrorInfo::Error_UnexpectedEOF;
+        result.info = "Unexpected EOF after CURSOR";
+        break;
+      }
       QString hand;
       in >> hand;
       hand = hand.toUpper();
       bool bh;
       if(hand == "LEFT") bh = LEFT;
       else if(hand == "RIGHT") bh = RIGHT;
-      else {error=true;break;}
+      else
+      {
+        result.code = ErrorInfo::Error_InvalidToken;
+        result.info = "Invalid token "+hand+" after CURSOR, only LEFT or RIGHT is accepted";
+        error=true;
+        break;
+      }
 
       tempCursorMap.insert(state, bh);
     }
     else if(cmd == "HAND")
     {
-      if(error = in.atEnd()) break;
+      if(error = in.atEnd())
+      {
+        result.code = ErrorInfo::Error_UnexpectedEOF;
+        result.info = "Unexpected EOF after HAND";
+        break;
+      }
       QString hand;
       in >> hand;
       hand = hand.toUpper();
@@ -107,18 +155,31 @@ bool StateMachine::LoadConfig(QString fileName)
       }
       else
       {
-        error=true;break;
+        result.code = ErrorInfo::Error_InvalidToken;
+        result.info = "Invalid token "+hand+" after HAND, only LEFT or RIGHT is accpcepted";
+        error=true;
+        break;
       }
     }
     else if(cmd == "TEMPLATE")
     {
       QString actionTypeStr;
-      if(error = in.atEnd()) break;
+      if(error = in.atEnd())
+      {
+        result.code = ErrorInfo::Error_UnexpectedEOF;
+        result.info = "Unexpected EOF after TEMPLATE";
+        break;
+      }
       in >> transRule.trans;
       transRule.trans = transRule.trans.toUpper();
       qDebug() << "trans=" << transRule.trans;
 
-      if(error = in.atEnd()) break;
+      if(error = in.atEnd())
+      {
+        result.code = ErrorInfo::Error_UnexpectedEOF;
+        result.info = "Unexpected EOF after TEMPLATE";
+        break;
+      }
       in >> actionTypeStr;
       actionTypeStr = actionTypeStr.toUpper();
       qDebug() << "actionTypeStr=" << actionTypeStr;
@@ -132,7 +193,12 @@ bool StateMachine::LoadConfig(QString fileName)
         if(actionTypeStr == "MOUSE") transRule.action.type = Action::ActionType_Mouse;
         if(actionTypeStr == "MOUSEDOWN") transRule.action.type = Action::ActionType_MouseDown;
         if(actionTypeStr == "MOUSEUP") transRule.action.type = Action::ActionType_MouseUp;
-        if(error = in.atEnd()) break;
+        if(error = in.atEnd())
+        {
+          result.code = ErrorInfo::Error_UnexpectedEOF;
+          result.info = "Unexpected EOF after "+actionTypeStr;
+          break;
+        }
         QString key;
         in >> key;
         key = key.toUpper();
@@ -146,13 +212,21 @@ bool StateMachine::LoadConfig(QString fileName)
         }
         else
         {
-          error=true;break;
+          result.code = ErrorInfo::Error_InvalidToken;
+          result.info = "Invalid token "+key+" after "+actionTypeStr+", only LEFT or RIGHT is accpcepted";
+          error=true;
+          break;
         }
       }
       else if (actionTypeStr == "MOUSEWHEEL")
       {
         transRule.action.type = Action::ActionType_MouseWheel;
-        if(error = in.atEnd()) break;
+        if(error = in.atEnd())
+        {
+          result.code = ErrorInfo::Error_UnexpectedEOF;
+          result.info = "Unexpected EOF after MOUSEWHEEL";
+          break;
+        }
         in >> transRule.action.mouseWheelAmount;
       }
       else if (actionTypeStr == "KEY" || actionTypeStr == "KEYDOWN" || actionTypeStr == "KEYUP")
@@ -160,21 +234,31 @@ bool StateMachine::LoadConfig(QString fileName)
         if(actionTypeStr == "KEY") transRule.action.type = Action::ActionType_Key;
         if(actionTypeStr == "KEYDOWN") transRule.action.type = Action::ActionType_KeyDown;
         if(actionTypeStr == "KEYUP") transRule.action.type = Action::ActionType_KeyUp;
-        if(error = in.atEnd()) break;
+        if(error = in.atEnd())
+        {
+          result.code = ErrorInfo::Error_UnexpectedEOF;
+          result.info = "Unexpected EOF after "+actionTypeStr;
+          break;
+        }
         in >> transRule.action.keyVK;
       }
       else if (actionTypeStr == "PROGRAM")
       {
         transRule.action.type = Action::ActionType_Program;
         QString command;
-        if(error = in.atEnd()) break;
+        if(error = in.atEnd())
+        {
+          result.code = ErrorInfo::Error_UnexpectedEOF;
+          result.info = "Unexpected EOF after "+actionTypeStr;
+          break;
+        }
         in >> command;
         transRule.action.programPath = command;
         if(command[0] == '"')
         {
           while(command[command.length()-1]!='"')
           {
-            if(error = in.atEnd()) break;
+            if(in.atEnd()) break;
             in >> command;
             transRule.action.programPath = transRule.action.programPath+" " + command;
           }
@@ -182,13 +266,27 @@ bool StateMachine::LoadConfig(QString fileName)
       }
       else
       {
-        error=true;break;
+        result.code = ErrorInfo::Error_InvalidToken;
+        result.info = "Invalid action type "+actionTypeStr;
+        error=true;
+        break;
       }
 
-      if(error = in.atEnd()) break;
+      if(error = in.atEnd())
+      {
+        result.code = ErrorInfo::Error_UnexpectedEOF;
+        result.info = "Unexpected EOF after action";
+        break;
+      }
       in >> transRule.to;
       transRule.to = transRule.to.toUpper();
-      if(!CheckMember(tempStateList, transRule.to)) {error=true;break;}
+      if(!CheckMember(tempStateList, transRule.to))
+      {
+        result.code = ErrorInfo::Error_InvalidStateName;
+        result.info = "State name "+transRule.to+" should be added before being referenced";
+        error=true;
+        break;
+      }
 
 
       if(!error)
@@ -199,8 +297,16 @@ bool StateMachine::LoadConfig(QString fileName)
       }
       else
       {
-        error=true;break;
+        error=true;
+        break;
       }
+    }
+    else
+    {
+      result.code = ErrorInfo::Error_InvalidToken;
+      result.info = "Invalid token "+cmd;
+      error=true;
+      break;
     }
   }
 
@@ -212,7 +318,7 @@ bool StateMachine::LoadConfig(QString fileName)
     cursorMap = tempCursorMap;
   }
 
-  return error;
+  return result;
 }
 
 void StateMachine::Transfer(QString transName, bool hand)

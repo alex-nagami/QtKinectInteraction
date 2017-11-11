@@ -66,7 +66,9 @@ int DollarOne::AddTemplate(QString fileName)
   while(!in.atEnd())
   {
     double x, y;
-    in >> x >> y;
+    in >> x;
+    if(in.atEnd()) break;
+    in >> y;
     newTemp.push_back(QVector2D(x, y));
   }
   qDebug() << "AddTemplate:" << fileInfo.absoluteFilePath() << fileInfo.fileName();
