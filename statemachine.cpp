@@ -289,6 +289,23 @@ ErrorInfo StateMachine::LoadConfig(QString fileName)
       }
 
 
+      for(int i=; i<tempTransferList.size(); i++)
+      {
+        if(tempTransferList[i].from == transRule.from && tempTransferList[i].trans == transRule.trans)
+        {
+          if(tempTransferList[i].to != transRule.to)
+          {
+            result.code = ErrorInfo::Error_MultipleTarget;
+            result.info = "Transition from "+transRule.from+" via "+transRule.trans+" has multiple targets.";
+            error = true;
+            break;
+          }
+          else
+          {
+          }
+        }
+      }
+
       if(!error)
       {
         tempTransferList.push_back(transRule);
@@ -334,8 +351,6 @@ void StateMachine::Transfer(QString transName, bool hand)
       {
         qDebug() << "action" << transName;
         ExecuteAction(transferList[i].action);
-        nowState = transferList[i].to;
-        break;
       }
     }
   }

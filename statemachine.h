@@ -25,7 +25,8 @@ struct ErrorInfo
     Error_InvalidStateName,
     Error_UnexpectedEOF,
     Error_ConflictCursor,
-    Error_NoSuchFile
+    Error_NoSuchFile,
+    Error_MultipleTarget
   };
 
   ErrorCode code;
@@ -72,7 +73,7 @@ public:
   QString from;
   QString trans;
   QString to;
-  Action action;
+  QVector<Action> actions;
 };
 
 class StateMachine : QObject
