@@ -2,10 +2,10 @@
 # add box
 # cursor origin left
 template box KEY 70 origin
-template new key 86 origin
+template box key 71 origin
 # template box program cmd.exe origin
-template prev mousewheel 120 origin
-template next mousewheel -120 origin
+# template prev mousewheel 120 origin
+# template next mousewheel -120 origin
 # state box template box KEY 70 origin
 # hand left template box KEY 71 box
 # hand left state box

@@ -1,6 +1,6 @@
 # QtKinectInteraction
 
-### Version 1.0 Beta
+### Version 1.0.1 Beta
 
 ## Demo(Nov. 10, 2017)
 [Demo](https://youtu.be/ReXqjKHqDWI)
@@ -63,5 +63,9 @@ Gesture template files(templates) are in fact a text file saving the coordinates
 * Bug fixing
 
 ## Release Notes
-### Nov. 11, 2017
+
+### 1.0.1 Nov. 22, 2017
+Support multiple actions in a single transition (so now key combinations are supported now), some bugs in dollar one algorithm fixed.
+
+### 1.0.0 Nov. 11, 2017
 Release the first version of the app.

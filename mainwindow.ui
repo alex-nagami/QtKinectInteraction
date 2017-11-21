@@ -24,7 +24,7 @@
        </size>
       </property>
       <property name="title">
-       <string>Depth</string>
+       <string>InfraRed</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>

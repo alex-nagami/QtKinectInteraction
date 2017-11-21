@@ -1,0 +1,25 @@
+template left key 37 origin
+template up key 38 origin
+template right key 39 origin
+template down key 40 origin
+
+template zoomout mousewheel 120 origin
+template zoomin mousewheel -120 origin
+
+template turnmapleft keydown 160 origin
+template turnmapleft key 37 origin
+template turnmapleft keyup 160 origin
+
+template turnmapright keydown 160 origin
+template turnmapright key 39 origin
+template turnmapright keyup 160 origin
+
+template sightup keydown 160 origin
+template sightup key 38 origin
+template sightup keyup 160 origin
+
+template sightdown keydown 160 origin 
+template sightdown key 40 origin
+template sightdown keyup 160 origin
+
+template shift key 32 origin

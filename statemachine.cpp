@@ -33,6 +33,7 @@ ErrorInfo StateMachine::LoadConfig(QString fileName)
   bool error = false;
 
   StateTransfer transRule;
+  transRule.actions.push_back(Action());
   transRule.from = originalState;
   transRule.hand = RIGHT;
 
@@ -186,13 +187,13 @@ ErrorInfo StateMachine::LoadConfig(QString fileName)
 
       if(actionTypeStr == "MOUSECURSOR")
       {
-        transRule.action.type = Action::ActionType_MouseCursor;
+        transRule.actions[0].type = Action::ActionType_MouseCursor;
       }
       else if(actionTypeStr == "MOUSE" || actionTypeStr == "MOUSEDOWN" || actionTypeStr == "MOUSEUP")
       {
-        if(actionTypeStr == "MOUSE") transRule.action.type = Action::ActionType_Mouse;
-        if(actionTypeStr == "MOUSEDOWN") transRule.action.type = Action::ActionType_MouseDown;
-        if(actionTypeStr == "MOUSEUP") transRule.action.type = Action::ActionType_MouseUp;
+        if(actionTypeStr == "MOUSE") transRule.actions[0].type = Action::ActionType_Mouse;
+        if(actionTypeStr == "MOUSEDOWN") transRule.actions[0].type = Action::ActionType_MouseDown;
+        if(actionTypeStr == "MOUSEUP") transRule.actions[0].type = Action::ActionType_MouseUp;
         if(error = in.atEnd())
         {
           result.code = ErrorInfo::Error_UnexpectedEOF;
@@ -204,11 +205,11 @@ ErrorInfo StateMachine::LoadConfig(QString fileName)
         key = key.toUpper();
         if(key == "LEFT")
         {
-          transRule.action.mouseLeftRight = LEFT;
+          transRule.actions[0].mouseLeftRight = LEFT;
         }
         else if(key == "RIGHT")
         {
-          transRule.action.mouseLeftRight = RIGHT;
+          transRule.actions[0].mouseLeftRight = RIGHT;
         }
         else
         {
@@ -220,31 +221,31 @@ ErrorInfo StateMachine::LoadConfig(QString fileName)
       }
       else if (actionTypeStr == "MOUSEWHEEL")
       {
-        transRule.action.type = Action::ActionType_MouseWheel;
+        transRule.actions[0].type = Action::ActionType_MouseWheel;
         if(error = in.atEnd())
         {
           result.code = ErrorInfo::Error_UnexpectedEOF;
           result.info = "Unexpected EOF after MOUSEWHEEL";
           break;
         }
-        in >> transRule.action.mouseWheelAmount;
+        in >> transRule.actions[0].mouseWheelAmount;
       }
       else if (actionTypeStr == "KEY" || actionTypeStr == "KEYDOWN" || actionTypeStr == "KEYUP")
       {
-        if(actionTypeStr == "KEY") transRule.action.type = Action::ActionType_Key;
-        if(actionTypeStr == "KEYDOWN") transRule.action.type = Action::ActionType_KeyDown;
-        if(actionTypeStr == "KEYUP") transRule.action.type = Action::ActionType_KeyUp;
+        if(actionTypeStr == "KEY") transRule.actions[0].type = Action::ActionType_Key;
+        if(actionTypeStr == "KEYDOWN") transRule.actions[0].type = Action::ActionType_KeyDown;
+        if(actionTypeStr == "KEYUP") transRule.actions[0].type = Action::ActionType_KeyUp;
         if(error = in.atEnd())
         {
           result.code = ErrorInfo::Error_UnexpectedEOF;
           result.info = "Unexpected EOF after "+actionTypeStr;
           break;
         }
-        in >> transRule.action.keyVK;
+        in >> transRule.actions[0].keyVK;
       }
       else if (actionTypeStr == "PROGRAM")
       {
-        transRule.action.type = Action::ActionType_Program;
+        transRule.actions[0].type = Action::ActionType_Program;
         QString command;
         if(error = in.atEnd())
         {
@@ -253,14 +254,14 @@ ErrorInfo StateMachine::LoadConfig(QString fileName)
           break;
         }
         in >> command;
-        transRule.action.programPath = command;
+        transRule.actions[0].programPath = command;
         if(command[0] == '"')
         {
           while(command[command.length()-1]!='"')
           {
             if(in.atEnd()) break;
             in >> command;
-            transRule.action.programPath = transRule.action.programPath+" " + command;
+            transRule.actions[0].programPath = transRule.actions[0].programPath+" " + command;
           }
         }
       }
@@ -289,7 +290,8 @@ ErrorInfo StateMachine::LoadConfig(QString fileName)
       }
 
 
-      for(int i=; i<tempTransferList.size(); i++)
+      bool multipleActionInSingleAction = false;
+      for(int i=0; i<tempTransferList.size(); i++)
       {
         if(tempTransferList[i].from == transRule.from && tempTransferList[i].trans == transRule.trans)
         {
@@ -302,15 +304,25 @@ ErrorInfo StateMachine::LoadConfig(QString fileName)
           }
           else
           {
+            multipleActionInSingleAction = true;
+            for(int j=0; j<transRule.actions.size(); j++)
+            {
+              tempTransferList[i].actions.push_back(transRule.actions[j]);
+            }
           }
         }
       }
 
       if(!error)
       {
-        tempTransferList.push_back(transRule);
+        if(!multipleActionInSingleAction)
+        {
+          tempTransferList.push_back(transRule);
+        }
         emit GetNewTransfer(transRule.trans);
         transRule.from = originalState;
+        transRule.actions.clear();
+        transRule.actions.push_back(Action());
       }
       else
       {
@@ -350,7 +362,10 @@ void StateMachine::Transfer(QString transName, bool hand)
       if(transferList[i].trans == transName && transferList[i].hand == hand)
       {
         qDebug() << "action" << transName;
-        ExecuteAction(transferList[i].action);
+        for(int aid=0; aid<transferList[i].actions.size(); aid++)
+        {
+          ExecuteAction(transferList[i].actions[aid]);
+        }
       }
     }
   }
@@ -363,20 +378,26 @@ void StateMachine::ExecuteAction(Action action)
   {
     INPUT input;
     input.type = INPUT_KEYBOARD;
-    input.ki.dwExtraInfo = GetMessageExtraInfo();
+//    input.ki.dwExtraInfo = GetMessageExtraInfo();
     input.ki.wVk = action.keyVK;
-    input.ki.time = GetTickCount();
-    input.ki.dwFlags = 0; // send key down event;
+    input.ki.time = 0;
+    input.ki.dwExtraInfo = 0;
+//    input.ki.time = GetTickCount();
+    input.ki.dwFlags = KEYEVENTF_EXTENDEDKEY; // send key down event;
+    qDebug() << "StateMachine::ExecuteAction : " << "Key down " << action.keyVK << "@" << input.ki.time;
     SendInput(1, &input, sizeof(input));
   }
   if(action.type == Action::ActionType_KeyUp || action.type == Action::ActionType_Key)
   {
     INPUT input;
     input.type = INPUT_KEYBOARD;
-    input.ki.dwExtraInfo = GetMessageExtraInfo();
+//    input.ki.dwExtraInfo = GetMessageExtraInfo();
     input.ki.wVk = action.keyVK;
-    input.ki.time = GetTickCount();
-    input.ki.dwFlags = KEYEVENTF_KEYUP;
+    input.ki.time = 0;
+    input.ki.dwExtraInfo = 0;
+//    input.ki.time = GetTickCount();
+    input.ki.dwFlags = KEYEVENTF_KEYUP | KEYEVENTF_EXTENDEDKEY;
+    qDebug() << "StateMachine::ExecuteAction : " << "Key up " << action.keyVK << "@" << input.ki.time;
     SendInput(1, &input, sizeof(input));
   }
   // mouse button events
@@ -423,11 +444,9 @@ void StateMachine::ExecuteAction(Action action)
   {
     INPUT input;
     input.type = INPUT_MOUSE;
-    input.mi.dx = 0;
-    input.mi.dy = 0;
     input.mi.mouseData = action.mouseWheelAmount;
     input.mi.dwExtraInfo = GetMessageExtraInfo();
-    input.mi.dwFlags = MOUSEEVENTF_HWHEEL;
+    input.mi.dwFlags = MOUSEEVENTF_WHEEL;
     SendInput(1, &input, sizeof(input));
   }
   // program event

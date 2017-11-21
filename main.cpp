@@ -4,6 +4,7 @@
 
 int main(int argc, char *argv[])
 {
+
   qRegisterMetaType<Mat>("Mat");
   QApplication a(argc, argv);
   ViewModel viewModel;

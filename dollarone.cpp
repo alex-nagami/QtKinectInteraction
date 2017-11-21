@@ -17,6 +17,7 @@ QVector2D DollarOne::BoundingBox(Points input)
 {
   double xmin = 1e20, xmax = -1e20;
   double ymin = 1e20, ymax = -1e20;
+  double xsize, ysize;
   for(int i=0; i<input.size(); i++)
   {
     if(input[i].x()<xmin) xmin = input[i].x();
@@ -25,7 +26,12 @@ QVector2D DollarOne::BoundingBox(Points input)
     if(input[i].y()<ymin) ymin = input[i].y();
     if(input[i].y()>ymax) ymax = input[i].y();
   }
-  return QVector2D(xmax-xmin, ymax-ymin);
+  xsize = xmax-xmin;
+  ysize = ymax-ymin;
+  double r = 4.0;
+  if(xsize<ysize/r) xsize = ysize/r;
+  if(ysize<xsize/r) ysize = xsize/r;
+  return QVector2D(xsize, ysize);
 }
 
 QVector2D DollarOne::Center(Points input)
