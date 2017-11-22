@@ -33,6 +33,7 @@ ViewModel::ViewModel() :
   }
   inited = true;
   status = Status_ShowUserHand;
+  emit SigStatus(status);
 }
 
 bool ViewModel::GetOpenGestureFileName(QString fileName)
@@ -58,21 +59,25 @@ bool ViewModel::GetOpenGestureFileName(QString fileName)
 
   QGraphicsScene* scene = new QGraphicsScene(0.0, 0.0, 100.0, 100.0);
   PublicTools::DrawPoints(gestureTemplate, scene);
+  currentTemplateFileName = fileName;
   emit SendGestureScene(scene);
 
   status = Status_ShowTemplate;
+  emit SigStatus(status);
   return true;
 }
 
 void ViewModel::CloseGesture()
 {
   status = Status_ShowUserHand;
+  emit SigStatus(status);
   gestureTemplate.clear();
 }
 
 void ViewModel::DrawGesture()
 {
   status = Status_DrawTemplate;
+  emit SigStatus(status);
   drawingGesture.clear();
 }
 
@@ -107,16 +112,20 @@ bool ViewModel::GetSaveGestureFileName(QString fileName)
   }
   file.close();
   status = Status_ShowUserHand;
+  emit SigStatus(status);
 }
 
 bool ViewModel::GetLoadConfigFileName(QString fileName)
 {
+  usingConfig = true;
   qDebug() << "ViewModel::GetLoadConfigFileName : " << "fileName=" << fileName;
+  currentConfigFileName = fileName;
   QFileInfo fileInfo(fileName);
   ErrorInfo result = stateMachine.LoadConfig(fileName);
 
   if(result.code != ErrorInfo::Error_Success)
   {
+    usingConfig = false;
     emit SendLoadConfigError(result);
     return false;
   }
@@ -130,7 +139,16 @@ bool ViewModel::GetLoadConfigFileName(QString fileName)
   {
     QString newGestureName = stateMachine.transferList[i].trans;
     qDebug() << "gesture file #" << i << " : " << fileFolder+"/"+newGestureName;
-    dollarOne.AddTemplate(fileFolder+"/"+newGestureName);
+    if(dollarOne.AddTemplate(fileFolder+"/"+newGestureName) == -1)
+    {
+      result.code = ErrorInfo::Error_NoSuchTemplate;
+      result.info = "No such template: "+fileFolder+"/"+newGestureName;
+      usingConfig = false;
+      stateMachine.Clear();
+
+      emit SendLoadConfigError(result);
+      break;
+    }
   }
   return true;
 }
@@ -159,7 +177,25 @@ void ViewModel::TakeFrame()
     QGraphicsScene* scene = new QGraphicsScene(0.0, 0.0, 100.0, 100.0);
     PublicTools::DrawPoints(gestureTemplate, scene);
     emit SendGestureScene(scene);
+    emit SigStatusMsg(cMsgShowTemplate.arg(currentTemplateFileName));
 //    emit SendGestureFrame(gestureMat);
+  }
+
+  if(status == Status_DrawTemplate)
+  {
+    emit SigStatusMsg(cMsgDrawTemplate);
+  }
+
+  if(status == Status_ShowUserHand)
+  {
+    if(usingConfig)
+    {
+      emit SigStatusMsg(cMsgUsingConfig.arg(currentConfigFileName));
+    }
+    else
+    {
+      emit SigStatusMsg(cMsgShowUserHand);
+    }
   }
 
   if(!inited)

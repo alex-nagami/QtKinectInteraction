@@ -13,28 +13,10 @@
 #include <Windows.h>
 #include <WinUser.h>
 #include "EasyKinect.h"
+#include "publictools.h"
 
 #define LEFT (true)
 #define RIGHT (false)
-
-struct ErrorInfo
-{
-  enum ErrorCode{
-    Error_Success = 0,
-    Error_InvalidToken,
-    Error_InvalidStateName,
-    Error_UnexpectedEOF,
-    Error_ConflictCursor,
-    Error_NoSuchFile,
-    Error_MultipleTarget
-  };
-
-  ErrorCode code;
-  QString info;
-  int lineNum;
-
-  ErrorInfo() : code(Error_Success), info("Success") {}
-};
 
 class Action
 {

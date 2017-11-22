@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
+  setWindowIcon(QIcon(":/resources/app.ico"));
   itemDepth = nullptr;
   sceneDepth = nullptr;
 
@@ -65,6 +66,7 @@ void MainWindow::GetGestureFrame(Mat gesture)
 
 void MainWindow::on_buttonOpenGesture_clicked()
 {
+  drawTemplate = false;
   QString fileName = QFileDialog::getOpenFileName(this, "Open a gesture");
   if(fileName!="")
   {
@@ -74,6 +76,7 @@ void MainWindow::on_buttonOpenGesture_clicked()
 
 void MainWindow::on_buttonCloseGesture_clicked()
 {
+  drawTemplate = false;
   emit SigCloseGesture();
 }
 
@@ -95,6 +98,7 @@ void MainWindow::on_buttonSaveGesture_clicked()
 
 void MainWindow::on_buttonLoadConfig_clicked()
 {
+  drawTemplate = false;
   QString fileName = QFileDialog::getOpenFileName(this, "Open a config file");
   if(fileName!="")
   {
@@ -191,4 +195,9 @@ void MainWindow::GetLoadConfigError(ErrorInfo info)
   {
     QMessageBox::information(this, "Error while loading config", info.info);
   }
+}
+
+void MainWindow::GetStatusBarMsg(QString msg)
+{
+  ui->statusBar->showMessage(msg);
 }

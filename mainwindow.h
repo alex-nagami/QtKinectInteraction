@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QFileDialog>
+#include <QIcon>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QMouseEvent>
@@ -12,6 +13,7 @@
 #include "statemachine.h"
 using namespace cv;
 #include "publictools.h"
+#include "viewmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -40,6 +42,7 @@ public slots:
   void GetGestureFrame(Mat);
   void GetGestureScene(QGraphicsScene* scene);
   void GetLoadConfigError(ErrorInfo info);
+  void GetStatusBarMsg(QString msg);
 
 private slots:
   void on_buttonOpenGesture_clicked();

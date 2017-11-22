@@ -4,6 +4,7 @@
 
 int main(int argc, char *argv[])
 {
+  QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
   qRegisterMetaType<Mat>("Mat");
   QApplication a(argc, argv);
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
   QObject::connect(&viewModel, &ViewModel::SendGestureFrame, &w, &MainWindow::GetGestureFrame, Qt::QueuedConnection);
   QObject::connect(&viewModel, &ViewModel::SendGestureScene, &w, &MainWindow::GetGestureScene, Qt::QueuedConnection);
   QObject::connect(&viewModel, &ViewModel::SendLoadConfigError, &w, &MainWindow::GetLoadConfigError, Qt::QueuedConnection);
+  QObject::connect(&viewModel, &ViewModel::SigStatusMsg, &w, &MainWindow::GetStatusBarMsg, Qt::QueuedConnection);
 
   QObject::connect(&w, &MainWindow::SigOpenGesture, &viewModel, &ViewModel::GetOpenGestureFileName, Qt::QueuedConnection);
   QObject::connect(&w, &MainWindow::SigCloseGesture, &viewModel, &ViewModel::CloseGesture, Qt::QueuedConnection);

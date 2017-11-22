@@ -5,4 +5,7 @@
         <file>Test/next</file>
         <file>Test/prev</file>
     </qresource>
+    <qresource prefix="/">
+        <file>resources/app.ico</file>
+    </qresource>
 </RCC>

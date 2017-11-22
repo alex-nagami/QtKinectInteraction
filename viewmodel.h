@@ -31,7 +31,13 @@ public:
     Status_DrawTemplate = 2
   };
 
+  const QString cMsgShowUserHand = "Displaying user hand...";
+  const QString cMsgShowTemplate = "Template @ %1";
+  const QString cMsgDrawTemplate = "Drawing template...";
+  const QString cMsgUsingConfig = "Config @ %1";
+
 signals:
+  void SigStatusMsg(QString);
   void SigStatus(Status);
   void SendDepthFrame(Mat);
   void SendGestureFrame(Mat);
@@ -86,6 +92,10 @@ private:
 
   Points gestureTemplate;
   Points drawingGesture;
+
+  QString currentTemplateFileName;
+  QString currentConfigFileName;
+  bool usingConfig;
 
   void run();
 };

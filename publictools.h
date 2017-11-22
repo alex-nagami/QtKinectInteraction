@@ -11,6 +11,26 @@ using namespace cv;
 
 typedef QVector<QVector2D> Points;
 
+struct ErrorInfo
+{
+  enum ErrorCode{
+    Error_Success = 0,
+    Error_InvalidToken,
+    Error_InvalidStateName,
+    Error_UnexpectedEOF,
+    Error_ConflictCursor,
+    Error_NoSuchFile,
+    Error_MultipleTarget,
+    Error_NoSuchTemplate
+  };
+
+  ErrorCode code;
+  QString info;
+  int lineNum;
+
+  ErrorInfo() : code(Error_Success), info("Success") {}
+};
+
 class PublicTools
 {
 public:

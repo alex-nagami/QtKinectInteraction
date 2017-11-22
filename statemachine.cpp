@@ -551,3 +551,11 @@ void StateMachine::HandMove(QVector2D left, HandState lhs, QVector2D right, Hand
     }
   }
 }
+
+void StateMachine::Clear()
+{
+  stateList.clear();
+  transferList.clear();
+  nowState = originalState;
+  cursorMap.clear();
+}
